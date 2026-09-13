@@ -423,36 +423,66 @@ async function confirmOrder(oppId) {
 // B2B Outreach and Syndication Handlers
 async function refreshOutreach() {
     try {
-        const res = await fetch('/api/outreach/campaign');
+        const res = await fetch('/api/outreach-stats');
         const data = await res.json();
-        outreachCampaignData = data.campaign || [];
-        const container = document.getElementById('outreachContainer');
+        
+        const elTotal = document.getElementById('statTotalSent');
+        const elActive = document.getElementById('statActiveSent');
+        const elNotMy = document.getElementById('statNotMyCompany');
+        const elOptOut = document.getElementById('statOptOut');
 
-        container.innerHTML = outreachCampaignData.map((item, idx) => `
-            <div class="outreach-row">
-                <div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="font-size: 0.65rem; background: rgba(0, 180, 216, 0.2); color: var(--accent-blue); padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                            🚀 DISPARO AUTOMÁTICO 24/7
-                        </span>
-                        <strong>${item.company}</strong> (${item.role})
-                    </div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px;">
-                        E-mail: <code>${item.email}</code> | Oferta: <span style="color: var(--accent-green); font-weight: bold;">${item.price}</span>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 6px;">
-                    <a href="${item.checkout_link}" target="_blank" class="btn-export" style="font-size: 0.68rem; padding: 4px 8px; border-color: var(--accent-blue);">
-                        🔗 Link da Oferta
-                    </a>
-                    <button class="btn-copy-email" onclick="previewEmail(${idx})">
-                        📄 Ver Proposta
-                    </button>
-                </div>
-            </div>
-        `).join('');
+        if (elTotal) elTotal.textContent = data.total_sent || '0';
+        if (elActive) elActive.textContent = data.active_prospects_count || '0';
+        if (elNotMy) elNotMy.textContent = data.not_my_company_count || '0';
+        if (elOptOut) elOptOut.textContent = data.opt_out_count || '0';
+
+        const container = document.getElementById('outreachTableContainer');
+        if (!container) return;
+
+        if (!data.recent_dispatches || data.recent_dispatches.length === 0) {
+            container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-secondary); font-size: 0.8rem;">Aguardando primeiras ofertas do robô autônomo. O robô dispara em ciclos de 10 a 20 segundos.</div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); text-align: left;">
+                        <th style="padding: 8px 12px;">Horário</th>
+                        <th style="padding: 8px 12px;">Empresa e Destinatário</th>
+                        <th style="padding: 8px 12px;">E-mail do Prospect</th>
+                        <th style="padding: 8px 12px;">Laudo B2B Ofertado</th>
+                        <th style="padding: 8px 12px;">Status / Resposta LGPD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.recent_dispatches.map(d => {
+                        let statusBadge = '';
+                        if (d.status === 'NAO_E_MINHA_EMPRESA') {
+                            statusBadge = `<span style="background: rgba(255,145,0,0.2); color: #ff9100; padding: 3px 8px; border-radius: 4px; font-weight: bold; border: 1px solid rgba(255,145,0,0.3); font-size: 0.72rem;">🛑 NÃO É A EMPRESA (${d.protocol_id || 'Protocolado'})</span>`;
+                        } else if (d.status === 'DESCADASTRO') {
+                            statusBadge = `<span style="background: rgba(255,82,82,0.2); color: #ff5252; padding: 3px 8px; border-radius: 4px; font-weight: bold; border: 1px solid rgba(255,82,82,0.3); font-size: 0.72rem;">🔕 DESCADASTRO / SEM INTERESSE</span>`;
+                        } else {
+                            statusBadge = `<span style="background: rgba(0,230,118,0.15); color: #00e676; padding: 3px 8px; border-radius: 4px; font-weight: bold; border: 1px solid rgba(0,230,118,0.3); font-size: 0.72rem;">📨 ENVIADO (Aguardando)</span>`;
+                        }
+
+                        const timeFormatted = (d.created_at || '').slice(11, 19);
+
+                        return `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                                <td style="padding: 8px 12px; color: var(--text-secondary); font-family: var(--font-mono);">${timeFormatted}</td>
+                                <td style="padding: 8px 12px; font-weight: 600; color: #fff;">${d.company_name} <span style="color: var(--text-secondary); font-weight: 400;">(${d.recipient_name})</span></td>
+                                <td style="padding: 8px 12px; font-family: var(--font-mono); color: var(--accent-cyan);">${d.recipient_email}</td>
+                                <td style="padding: 8px 12px; color: #fff;">${d.price_formatted} - ${d.asset_title.slice(0, 30)}...</td>
+                                <td style="padding: 8px 12px;">${statusBadge}</td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        `;
     } catch (e) {
-        console.error('Error loading outreach campaign', e);
+        console.error('Error loading outreach stats', e);
     }
 }
 

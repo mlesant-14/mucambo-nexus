@@ -93,6 +93,23 @@ class Database:
                     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+
+            # Email Outreach & LGPD Feedback Tracking Table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS email_outreach_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    recipient_email TEXT NOT NULL,
+                    recipient_name TEXT NOT NULL,
+                    company_name TEXT NOT NULL,
+                    asset_title TEXT NOT NULL,
+                    price_formatted TEXT NOT NULL,
+                    dispatch_channel TEXT NOT NULL,
+                    status TEXT DEFAULT 'ENVIADO',
+                    protocol_id TEXT DEFAULT '',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
             conn.commit()
 
     def save_opportunity(self, opp: Opportunity) -> bool:
@@ -235,3 +252,56 @@ class Database:
             summary["active_catalog"] = cursor.fetchone()["active_catalog"]
 
             return summary
+
+    def log_email_dispatch(self, recipient_email: str, recipient_name: str, company_name: str, asset_title: str, price_formatted: str, dispatch_channel: str) -> int:
+        """Registra no banco cada e-mail disparado pelo robô."""
+        with self._get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO email_outreach_logs 
+                (recipient_email, recipient_name, company_name, asset_title, price_formatted, dispatch_channel, status)
+                VALUES (?, ?, ?, ?, ?, ?, 'ENVIADO')
+            """, (recipient_email, recipient_name, company_name, asset_title, price_formatted, dispatch_channel))
+            conn.commit()
+            return cursor.lastrowid
+
+    def update_outreach_feedback(self, company_or_target: str, action: str, protocol_id: str):
+        """Atualiza a resposta do destinatário: Não é minha empresa ou Descadastro LGPD."""
+        status = "NAO_E_MINHA_EMPRESA" if action == "not_my_company" else "DESCADASTRO"
+        with self._get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE email_outreach_logs 
+                SET status = ?, protocol_id = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE company_name LIKE ? OR recipient_email LIKE ?
+            """, (status, protocol_id, f"%{company_or_target}%", f"%{company_or_target}%"))
+            conn.commit()
+
+    def get_outreach_stats(self) -> Dict[str, Any]:
+        """Retorna as métricas completas de envios, confirmações e pedidos de descadastro."""
+        with self._get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM email_outreach_logs")
+            total_sent = cursor.fetchone()[0] or 0
+            
+            cursor.execute("SELECT COUNT(*) FROM email_outreach_logs WHERE status = 'NAO_E_MINHA_EMPRESA'")
+            not_my_company = cursor.fetchone()[0] or 0
+            
+            cursor.execute("SELECT COUNT(*) FROM email_outreach_logs WHERE status = 'DESCADASTRO'")
+            opt_out = cursor.fetchone()[0] or 0
+            
+            cursor.execute("SELECT COUNT(*) FROM email_outreach_logs WHERE status = 'ENVIADO'")
+            active_prospects = cursor.fetchone()[0] or 0
+            
+            cursor.execute("SELECT * FROM email_outreach_logs ORDER BY id DESC LIMIT 50")
+            rows = cursor.fetchall()
+            logs = [dict(r) for r in rows]
+            
+            return {
+                "total_sent": total_sent,
+                "not_my_company_count": not_my_company,
+                "opt_out_count": opt_out,
+                "active_prospects_count": active_prospects,
+                "recent_dispatches": logs
+            }
+

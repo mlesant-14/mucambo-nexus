@@ -251,6 +251,9 @@ async def get_feedback(request: Request, action: Optional[str] = "opt_out", targ
     import random
     protocol = f"CMP-{random.randint(100000, 999999)}"
 
+    # Atualiza o status do e-mail no painel de monitoramento de outreach
+    db.update_outreach_feedback(company_or_target=target or "", action=action, protocol_id=protocol)
+
     i18n_data = {
         "pt": {
             "title": "Preferência Registrada",
@@ -330,6 +333,12 @@ async def trigger_test_dispatch(to_email: Optional[str] = "mllogic25@gmail.com")
         return {"success": True, "message": f"E-mail enviado com sucesso diretamente do Render para {to_email}!"}
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+@app.get("/api/outreach-stats")
+async def get_outreach_stats():
+    """Retorna estatísticas em tempo real de envios de e-mails, confirmações e pedidos de descadastro."""
+    return db.get_outreach_stats()
 
 
 @app.get("/api/summary")

@@ -134,6 +134,16 @@ class AutonomousOfferDispatcher:
             f"[AUTO-DISPATCH] Oferta enviada automaticamente para {target['contact']} ({target['company']}) | Ativo: '{asset['identifier']}' ({formatted_price}) | Canal: {dispatch_channel}"
         )
 
+        # Registra formalmente na tabela de monitoramento de outreach
+        self.db.log_email_dispatch(
+            recipient_email=target["email"],
+            recipient_name=target["contact"],
+            company_name=target["company"],
+            asset_title=asset["title"],
+            price_formatted=formatted_price,
+            dispatch_channel=dispatch_channel
+        )
+
         return {
             "dispatched": True,
             "target_company": target["company"],
