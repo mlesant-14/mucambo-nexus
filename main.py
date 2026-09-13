@@ -21,15 +21,19 @@ BANNER = r"""
 """
 
 def main():
+    import os
+    runtime_port = int(os.getenv("PORT", str(PORT)))
+    runtime_host = os.getenv("HOST", "0.0.0.0")
+
     print(BANNER)
-    print(f"[*] Starting MUCAMBO Nexus on http://{HOST}:{PORT}")
-    print(f"[*] Access the Dashboard in your browser: http://localhost:{PORT}")
+    print(f"[*] Starting MUCAMBO Nexus on http://{runtime_host}:{runtime_port}")
+    print(f"[*] Access the Dashboard in your browser: http://localhost:{runtime_port}")
     print(f"[*] Press CTRL+C to terminate cleanly.\n")
 
     uvicorn.run(
         "web.app:app",
-        host=HOST,
-        port=PORT,
+        host=runtime_host,
+        port=runtime_port,
         reload=False,
         log_level="info"
     )
