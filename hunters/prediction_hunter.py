@@ -50,9 +50,9 @@ class PredictionHunter(BaseHunter):
 
             opp = Opportunity(
                 asset_type=AssetType.PREDICTION_CONTRACT,
-                identifier=f"PRED-{random.randint(1000, 9999)}",
-                title=f"Contrato Preditivo: {m['topic']}",
-                description=f"Discrepância de probabilidade detectada entre duas plataformas globais. Arbitragem estatística sem risco direcional.",
+                identifier=f"ARB-QUANT-{random.randint(1000, 9999)}",
+                title=f"Operação Quantitativa: {m['topic']}",
+                description=f"Discrepância estatística apurada entre livros de ordens institucionais. Captura de spread com neutralidade de mercado (Market-Neutral Arbitrage).",
                 source_platform=m["source_book"],
                 target_platform=m["target_book"],
                 source_cost_usd=cost,

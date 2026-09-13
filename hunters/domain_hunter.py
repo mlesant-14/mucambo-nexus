@@ -45,13 +45,13 @@ class DomainHunter(BaseHunter):
             domain_name = f"{prefix}{kw}{tld}".lower()
             tld_mult = self.TLD_MULTIPLIERS[tld]
 
-            # Valuation metrics:
-            # Source cost to acquire (e.g. drop registry or raw auction fee: $11 - $35)
-            source_cost = round(random.uniform(11.0, 38.0), 2)
+            # Valuation metrics calibradas para alta liquidez e giro rápido:
+            # Custo de registro na fonte: $9.00 a $18.00
+            source_cost = round(random.uniform(9.0, 18.0), 2)
             
-            # Estimated resale market value (Appraisal heuristic)
-            market_base = random.uniform(90.0, 320.0)
-            target_price = round(market_base * tld_mult, 2)
+            # Preço de entrada altamente atrativo para fechamento rápido: $49 a $97 USD
+            market_base = random.uniform(49.0, 85.0)
+            target_price = round(market_base * (1.1 if tld == ".com" else (1.2 if tld == ".ai" else 1.0)), 2)
             
             net_profit = round(target_price - source_cost, 2)
             profit_margin = round((net_profit / target_price) * 100, 1)
