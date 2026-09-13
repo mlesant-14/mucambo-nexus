@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.dashboard_title }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-lang="{{ lang }}">
+    <!-- Top Navigation & Header -->
+    <header class="navbar">
+        <div class="brand">
+            <div class="brand-logo">
+                <span class="pulse-dot"></span>
+                <span class="brand-title">MUCAMBO <span class="nexus-glow">NEXUS</span></span>
+            </div>
+            <span class="brand-badge">AUTONOMOUS ARBITRAGE v2.4</span>
+        </div>
+
+        <div class="system-status-indicator">
+            <div class="status-pill {% if is_running %}active{% else %}paused{% endif %}" id="statusPill">
+                <span class="status-beacon"></span>
+                <span id="statusText">{% if is_running %}{{ t.running_24_7 }}{% else %}{{ t.paused }}{% endif %}</span>
+            </div>
+            <button id="toggleBotBtn" class="btn-control" onclick="toggleBot()">
+                {% if is_running %}Pausar Motor{% else %}Iniciar Motor 24/7{% endif %}
+            </button>
+        </div>
+
+        <div class="mode-switch-wrap">
+            <button id="modeToggleBtn" class="btn-mode-toggle {% if simulation_mode %}mode-sim{% else %}mode-real{% endif %}" onclick="toggleSimulationMode()">
+                {% if simulation_mode %}🧪 MODO SIMULAÇÃO{% else %}⚡ MODO PRODUÇÃO (REAL){% endif %}
+            </button>
+        </div>
+
+        <div class="locale-bar">
+            <label for="langSelector" class="locale-label">{{ t.currency_selector }}:</label>
+            <select id="langSelector" onchange="changeLanguage(this.value)" class="lang-dropdown">
+                <option value="pt" {% if lang == 'pt' %}selected{% endif %}>🇧🇷 Português (BRL - R$)</option>
+                <option value="en" {% if lang == 'en' %}selected{% endif %}>🇺🇸 English (USD - $)</option>
+                <option value="es" {% if lang == 'es' %}selected{% endif %}>🇪🇸 Español (EUR - €)</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="dashboard-content">
+        <!-- Hero Concept Banner -->
+        <div class="zero-risk-banner">
+            <div class="banner-icon">⚡</div>
+            <div class="banner-text">
+                <strong>{{ t.instant_delivery }}</strong> — {{ t.risk_free_desc }}
+                <span class="sim-badge" id="simBadge">
+                    {% if simulation_mode %}{{ t.sim_mode_badge }}{% else %}{{ t.live_mode_badge }}{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <section class="kpi-grid">
+            <div class="kpi-card profit-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">{{ t.total_profit }}</span>
+                    <span class="kpi-icon">💰</span>
+                </div>
+                <div class="kpi-value" id="kpiTotalProfit">--</div>
+                <div class="kpi-subtext">Spread líquido retido em carteira</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">{{ t.active_offers }}</span>
+                    <span class="kpi-icon">🌐</span>
+                </div>
+                <div class="kpi-value" id="kpiActiveCatalog">--</div>
+                <div class="kpi-subtext">Ativos intangíveis expostos no mercado</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">{{ t.opportunities_scanned }}</span>
+                    <span class="kpi-icon">📡</span>
+                </div>
+                <div class="kpi-value" id="kpiScanned">--</div>
+                <div class="kpi-subtext">Varredura global contínua (24h/dia)</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">{{ t.win_rate }} / Trades</span>
+                    <span class="kpi-icon">📈</span>
+                </div>
+                <div class="kpi-value" id="kpiTradesCount">--</div>
+                <div class="kpi-subtext" id="kpiAvgMargin">Margem média: --%</div>
+            </div>
+        </section>
+
+        <!-- Two Columns Layout: Catalog + Trades & Terminal -->
+        <div class="dual-view">
+            <!-- Left Column: Catalog & Opportunities -->
+            <section class="panel catalog-panel">
+                <div class="panel-header">
+                    <div class="panel-title-wrap">
+                        <h2>{{ t.market_catalog }}</h2>
+                        <span class="badge-counter" id="catalogCount">0</span>
+                    </div>
+                    <div class="filter-pills">
+                        <button class="pill active" onclick="filterCatalog('ALL')">{{ t.filter_all }}</button>
+                        <button class="pill" onclick="filterCatalog('EXPIRED_DOMAIN')">Domínios</button>
+                        <button class="pill" onclick="filterCatalog('DIGITAL_SERVICE')">Serviços IA</button>
+                        <button class="pill" onclick="filterCatalog('PREDICTION_CONTRACT')">Mercados Preditivos</button>
+                    </div>
+                </div>
+
+                <div class="catalog-grid" id="catalogContainer">
+                    <div class="loading-spinner">Carregando catálogo de ativos...</div>
+                </div>
+            </section>
+
+            <!-- Right Column: Live Trades & Audit Log -->
+            <div class="sidebar-panels">
+                <!-- Transactions Panel -->
+                <section class="panel trades-panel">
+                    <div class="panel-header">
+                        <h2>{{ t.recent_trades }}</h2>
+                        <span class="live-tag">LIVE FEED</span>
+                    </div>
+                    <div class="trades-list" id="tradesContainer">
+                        <div class="empty-state">Aguardando primeiras liquidações autônomas...</div>
+                    </div>
+                </section>
+
+                <!-- Robot Audit Terminal -->
+                <section class="panel terminal-panel">
+                    <div class="panel-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <h2>{{ t.terminal_logs }}</h2>
+                    </div>
+                    <div class="terminal-body" id="terminalLogs">
+                        <div class="terminal-line">[SYSTEM] MUCAMBO Arbitrage Terminal Initialized.</div>
+                    </div>
+                </section>
+            </div>
+        <!-- SECTION: Client Acquisition & Market Distribution Engine -->
+        <section class="panel distribution-panel">
+            <div class="panel-header">
+                <div class="panel-title-wrap">
+                    <h2>🎯 Máquina de Clientes & Canais de Distribuição Real</h2>
+                    <span class="badge-counter" style="background: rgba(0, 245, 155, 0.15); color: var(--accent-green); border-color: var(--accent-green);">ONDE OS COMPRADORES ESTÃO</span>
+                </div>
+                <div class="distribution-actions">
+                    <button class="btn-buy-jit" onclick="triggerStripeValidation()" style="background: linear-gradient(90deg, #635bff, #00d2ff); color: #fff;">
+                        🧪 Testar 1ª Venda Real (Stripe Test)
+                    </button>
+                </div>
+            </div>
+
+            <div class="distribution-grid">
+                <!-- Channel 1: Secondary Domain Marketplaces -->
+                <div class="dist-card">
+                    <div class="dist-card-header">
+                        <span class="dist-icon">🌐</span>
+                        <div>
+                            <h4>Sindicância de Domínios em Massa</h4>
+                            <p class="dist-sub">Publique os domínios encontrados nos maiores leilões mundiais (Afternic, Sedo, Dan).</p>
+                        </div>
+                    </div>
+                    <div class="dist-body">
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">
+                            Não espere acharem seu site. Exporte a planilha já precificada e suba direto nas redes da <strong>GoDaddy</strong> e <strong>Sedo</strong> com milhões de buscas diárias.
+                        </p>
+                        <div class="csv-buttons">
+                            <a href="/api/syndication/export/afternic" class="btn-export" download>
+                                📥 Baixar CSV Afternic / GoDaddy
+                            </a>
+                            <a href="/api/syndication/export/sedo" class="btn-export" download>
+                                📥 Baixar CSV Sedo.com
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Channel 2: Autonomous B2B Lead Prospector -->
+                <div class="dist-card">
+                    <div class="dist-card-header">
+                        <span class="dist-icon">✉️</span>
+                        <div>
+                            <h4>Prospecção Ativa B2B por E-mail</h4>
+                            <p class="dist-sub">E-mails personalizados com link direto de pagamento para diretores de empresas.</p>
+                        </div>
+                    </div>
+                    <div class="dist-body">
+                        <div id="outreachContainer" class="outreach-list">
+                            <div class="loading-spinner">Carregando lista de prospecção corporativa...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Interactive Purchase Modal -->
+    <div id="orderModal" class="modal-overlay">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h3>Liquidação Just-in-Time</h3>
+                <button class="btn-close" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

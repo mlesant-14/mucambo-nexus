@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: mucambo-nexus
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: SIMULATION_MODE
+        value: "false"
+      - key: MIN_PROFIT_MARGIN_PERCENT
+        value: "30.0"
+      - key: MIN_NET_PROFIT_USD
+        value: "15.0"

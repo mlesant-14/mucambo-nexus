@@ -1,0 +1,22 @@
+{
+  "name": "mucambo-nexus",
+  "version": "1.0.0",
+  "description": "Autonomous 24/7 Intangible Asset Arbitrage Engine",
+  "main": "run.js",
+  "scripts": {
+    "start": "node run.js",
+    "dev": "node run.js",
+    "test": "py tests/test_arbitrage.py",
+    "py-start": "py main.py"
+  },
+  "keywords": [
+    "arbitrage",
+    "autonomous",
+    "bot",
+    "fastapi",
+    "jit",
+    "fintech"
+  ],
+  "author": "MUCAMBO",
+  "license": "MIT"
+}

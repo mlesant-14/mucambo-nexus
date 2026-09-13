@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mucambo-nexus:
+    build: .
+    container_name: mucambo_nexus_247
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - SIMULATION_MODE=false
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
