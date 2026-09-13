@@ -55,9 +55,9 @@
             <div class="text-[11px] text-slate-400">Manual completo com as ações imediatas, desvios e cálculo de ROI.</div>
           </div>
         </div>
-        <button onclick="downloadFakeFile('Dossie_Executivo_Otimizacao.pdf', 'MUCAMBO NEXUS - DOSSIE TECNICO\n\n1. Desvio Rodoviario SP-BH km 380 -> Economia de R$ 385/viagem\n2. 6 Postos Diesel S-10 a R$ 5,42/L -> Economia de R$ 608/tanque\n3. Checklist de Telemetria e Reducao de Marcha Lenta\n\nSHA-256 VALIDATED.')" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
-          <span>📥 Baixar PDF (4.8 MB)</span>
-        </button>
+        <a href="/api/download/dossie-pdf" target="_blank" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+          <span>📄 Abrir / Baixar PDF Oficial</span>
+        </a>
       </div>
 
       <!-- File 2: Excel Spreadsheet -->
@@ -71,7 +71,7 @@
             <div class="text-[11px] text-slate-400">Tabela formatada pronta para importar no sistema ERP da sua empresa.</div>
           </div>
         </div>
-        <button onclick="downloadFakeFile('Planilha_Rotas_Pedagios.csv', 'Corredor,Custo_Atual,Custo_Otimizado,Economia_Viagem\nSP-Curitiba,3840,3320,-520\nCampinas-BH,4290,3650,-640\nRio-Vitoria,2910,2500,-410')" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+        <button onclick="downloadCsvFile()" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
           <span>📊 Baixar Planilha (CSV)</span>
         </button>
       </div>
@@ -87,7 +87,7 @@
             <div class="text-[11px] text-slate-400">Coordenadas georreferenciadas dos pontos de abastecimento com desconto.</div>
           </div>
         </div>
-        <button onclick="downloadFakeFile('Pontos_GPS_Rotas.kml', '<?xml version=\"1.0\" encoding=\"UTF-8\"?><kml><Document><name>Postos_Economia_Mucambo</name></Document></kml>')" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+        <button onclick="downloadGpsFile()" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
           <span>📍 Baixar Waypoints (.KML)</span>
         </button>
       </div>
@@ -123,8 +123,18 @@
   </div>
 
   <script>
-    function downloadFakeFile(filename, textContent) {
-      const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+    function downloadCsvFile() {
+      const csv = "Corredor,Custo_Atual,Custo_Otimizado,Economia_Viagem,Percentual\nSP-Curitiba,3840,3320,-520,-13.5%\nCampinas-BH,4290,3650,-640,-14.9%\nRio-Vitoria,2910,2500,-410,-14.1%\nTotal_Medio,11040,9470,-1570,-14.2%";
+      triggerDownload("Planilha_Rotas_Economia.csv", csv, "text/csv;charset=utf-8");
+    }
+
+    function downloadGpsFile() {
+      const kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n<Document><name>Postos_Economia_Mucambo</name></Document>\n</kml>";
+      triggerDownload("Pontos_GPS_Rotas.kml", kml, "application/vnd.google-earth.kml+xml;charset=utf-8");
+    }
+
+    function triggerDownload(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
