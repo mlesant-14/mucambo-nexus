@@ -11,6 +11,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from core.fuel_toll_service import FuelTollIntelligenceService
 
 
 class PDFDeliverableGenerator:
@@ -23,6 +24,7 @@ class PDFDeliverableGenerator:
         - Página 3: Matriz Tarifária de Corredores Rodoviários, Praças de Pedágio e Combustível
         - Página 4: Plano de Ação em 3 Fases, Projeção de ROI e Certificação Digital SHA-256
         """
+        bench = FuelTollIntelligenceService.get_active_benchmark()
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(
             buffer,
@@ -112,7 +114,7 @@ class PDFDeliverableGenerator:
             [Paragraph("<b>Número de Registro Técnico:</b>", body_p), Paragraph(f"LAUDO-OPEX-{order_id}", body_bold)],
             [Paragraph("<b>Classificação do Documento:</b>", body_p), Paragraph("Restrito / Confidencial Corporativo", body_p)],
             [Paragraph("<b>Data de Emissão e Vigência:</b>", body_p), Paragraph(f"{datetime.now().strftime('%d/%m/%Y')} • Exercício Operacional 2026", body_p)],
-            [Paragraph("<b>Base Normativa e Parâmetros:</b>", body_p), Paragraph("Resolução ANTT nº 5.867/2019 • Lei Federal nº 13.703/2018 • Levantamento Regular ANP", body_p)],
+            [Paragraph("<b>Base Normativa e Parâmetros:</b>", body_p), Paragraph(f"{bench['boletim_oficial']} ({bench['periodo_referencia']}) • Resolução ANTT nº 5.867/2019", body_p)],
             [Paragraph("<b>Responsável Técnico:</b>", body_p), Paragraph("MUCAMBO Analytics &amp; Strategic Advisory Core", body_p)],
         ]
         ficha_table = Table(ficha_data, colWidths=[170, 370])
@@ -494,7 +496,11 @@ class PDFDeliverableGenerator:
         legal_box = [
             [
                 Paragraph("<b>Embasamento Regulatório:</b>", body_bold),
-                Paragraph("Lei Federal nº 13.703/2018 (Piso Mínimo de Frete Rodoviário), Resolução ANTT nº 5.867/2019, Lei dos Motoristas nº 13.103/2015 e Levantamento Regular de Preços de Combustíveis da Agência Nacional do Petróleo (ANP).", body_p)
+                Paragraph(f"Lei Federal nº 13.703/2018 (Piso Mínimo de Frete), {bench['regulacao_frete']['resolucao_antt']}, Lei nº 13.103/2015 e {bench['boletim_oficial']}.", body_p)
+            ],
+            [
+                Paragraph("<b>Metodologia &amp; Data-Base:</b>", body_bold),
+                Paragraph(bench['nota_metodologica'], body_p)
             ],
             [
                 Paragraph("<b>Protocolo de Homologação:</b>", body_bold),
@@ -503,10 +509,6 @@ class PDFDeliverableGenerator:
             [
                 Paragraph("<b>Hash Criptográfico (SHA-256):</b>", body_bold),
                 Paragraph(f"{proof_hash}", code_style)
-            ],
-            [
-                Paragraph("<b>Chancela e Validação:</b>", body_bold),
-                Paragraph("Este laudo possui fé técnica corporativa para subsídio de planejamento estratégico e redução de custos operacionais. Documento com garantia de integridade irrenunciável expedida pelo MUCAMBO Analytics Core.", body_p)
             ]
         ]
         lt = Table(legal_box, colWidths=[140, 400])
