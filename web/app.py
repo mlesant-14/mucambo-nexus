@@ -291,6 +291,47 @@ async def get_feedback(request: Request, action: Optional[str] = "opt_out", targ
     )
 
 
+@app.get("/api/test-dispatch")
+async def trigger_test_dispatch(to_email: Optional[str] = "mllogic25@gmail.com"):
+    """Dispara um teste ao vivo do robô pelo SMTP do servidor para validar o canal."""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_pass = os.getenv("SMTP_PASS")
+    smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+
+    if not smtp_user or not smtp_pass:
+        return {"success": False, "error": "SMTP_USER ou SMTP_PASS ainda não carregados nas variáveis do Render."}
+
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = f"MUCAMBO Advisory <{smtp_user}>"
+        msg['To'] = to_email
+        msg['Subject'] = "MUCAMBO Nexus: Servidor em Nuvem Homologado com Sucesso"
+        
+        body = (
+            "Olá!\n\n"
+            "Este e-mail confirma que o seu servidor em nuvem no Render conectou-se com sucesso ao seu Gmail oficial.\n\n"
+            "As variáveis de ambiente foram lidas e o canal de envio está 100% ativo para despachos autônomos de propostas do Laudo B2B.\n\n"
+            "Atenciosamente,\nMUCAMBO Nexus Cloud Engine"
+        )
+        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+        server = smtplib.SMTP(smtp_host, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_user, to_email, msg.as_string())
+        server.quit()
+
+        db.log_event("SUCCESS", "AutoOffer", f"Teste de despacho enviado com sucesso para {to_email} via Render Cloud.")
+        return {"success": True, "message": f"E-mail enviado com sucesso diretamente do Render para {to_email}!"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 @app.get("/api/summary")
 async def get_summary(lang: str = "pt"):
     summary = db.get_financial_summary()
