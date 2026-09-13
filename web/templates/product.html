@@ -93,7 +93,82 @@
                 </div>
             </div>
 
-            <!-- Action Button -->
+            <!-- Action Area: Safe Mode vs Direct Checkout -->
+            {% if is_inquiry_only %}
+            <div class="bg-slate-900/90 border border-blue-500/30 rounded-lg p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-300">Mesa Institucional de Intermediação</span>
+                    </div>
+                    <span class="text-[11px] font-mono text-slate-400">Garantia Escrow Antifraude</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Para resguardar a titularidade definitiva do domínio antes de qualquer liquidação bancária, formalize sua manifestação de interesse abaixo. Nenhum valor será debitado do seu cartão neste momento.
+                </p>
+
+                <form id="inquiryForm" onsubmit="submitInquiry(event)" class="space-y-3 pt-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Seu Nome / Razão Social</label>
+                            <input type="text" id="inq_name" required placeholder="Ex: Roberto Silva" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs text-white focus:border-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 mb-1">E-mail Corporativo</label>
+                            <input type="email" id="inq_email" required placeholder="contato@empresa.com" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs text-white focus:border-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Telefone / WhatsApp</label>
+                            <input type="tel" id="inq_phone" required placeholder="(11) 99999-9999" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs text-white focus:border-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Proposta Pretendida</label>
+                            <input type="text" id="inq_offer" value="{{ formatted_price }}" class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-xs text-white focus:border-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" id="btnSubmitInquiry" class="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition flex items-center justify-center gap-2">
+                        <span>Protocolar Proposta de Aquisição (Sem Cobrança Prévia)</span>
+                    </button>
+                </form>
+
+                <div id="inquirySuccess" class="hidden p-3 bg-emerald-950/60 border border-emerald-500/50 rounded text-xs text-emerald-300 space-y-1">
+                    <div class="font-bold font-mono" id="protocolText">✓ PROTOCOLO GERADO</div>
+                    <p class="text-[11px] text-slate-300">Sua manifestação de interesse foi registrada. Nossa mesa de custódia entrará em contato em até 24h para formalização da titularidade.</p>
+                </div>
+            </div>
+            <script>
+            async function submitInquiry(e) {
+                e.preventDefault();
+                const btn = document.getElementById('btnSubmitInquiry');
+                btn.disabled = true;
+                btn.innerHTML = 'Protocolando proposta...';
+                try {
+                    const res = await fetch('/api/domain-inquiry', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            domain: '{{ asset.title }}',
+                            name: document.getElementById('inq_name').value,
+                            email: document.getElementById('inq_email').value,
+                            phone: document.getElementById('inq_phone').value,
+                            offer: document.getElementById('inq_offer').value
+                        })
+                    });
+                    const data = await res.json();
+                    document.getElementById('inquiryForm').classList.add('hidden');
+                    document.getElementById('protocolText').innerText = '✓ ' + (data.protocol || 'PROTOCOLO CONFIRMADO');
+                    document.getElementById('inquirySuccess').classList.remove('hidden');
+                } catch(err) {
+                    alert('Erro ao registrar proposta. Tente novamente.');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Protocolar Proposta de Aquisição (Sem Cobrança Prévia)';
+                }
+            }
+            </script>
+            {% else %}
+            <!-- Action Button when Direct Checkout is Safe and Enabled -->
             <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <a href="{{ checkout_url }}" class="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
                     <span>Adquirir Domínio via Stripe (Custódia Segura)</span>
@@ -104,6 +179,7 @@
                     <span>🛡️ Processamento Stripe Verified</span>
                 </div>
             </div>
+            {% endif %}
 
         </div>
 

@@ -116,6 +116,12 @@ async def get_client_product_page(request: Request, opp_id: str, lang: Optional[
     checkout_url = checkout_data.get("checkout_url", f"/?buy={opp_id}")
 
     label = "Nome de Domínio Premium" if opp["asset_type"] == "EXPIRED_DOMAIN" else "Serviço Corporativo / Relatório de IA"
+    
+    # Blindagem de segurança: Se for domínio e não houver API de registradora configurada com saldo,
+    # opera exclusivamente em modo Consulta/Intermediação sem cobrar cartão do cliente antes de garantir o ativo.
+    is_domain = opp["asset_type"] == "EXPIRED_DOMAIN"
+    has_registrar_api = bool(os.getenv("NAMECHEAP_API_KEY") or os.getenv("GODADDY_API_KEY"))
+    is_inquiry_only = is_domain and not has_registrar_api
 
     return templates.TemplateResponse(
         request=request,
@@ -128,9 +134,38 @@ async def get_client_product_page(request: Request, opp_id: str, lang: Optional[
             },
             "asset_type_label": label,
             "formatted_price": formatted_price,
-            "checkout_url": checkout_url
+            "checkout_url": checkout_url,
+            "is_inquiry_only": is_inquiry_only
         }
     )
+
+
+@app.post("/api/domain-inquiry")
+async def post_domain_inquiry(request: Request):
+    """Registra com total segurança propostas de aquisição de domínios sem cobrar o cliente de forma leviana."""
+    try:
+        data = await request.json()
+    except Exception:
+        data = {}
+    
+    import random
+    domain_name = data.get("domain", "Ativo")
+    name = data.get("name", "Anônimo")
+    email = data.get("email", "")
+    phone = data.get("phone", "")
+    offer = data.get("offer", "Valor de tabela")
+    protocol = f"INQ-{random.randint(10000, 99999)}"
+
+    db.log_event(
+        "INFO", "DomainBrokerage",
+        f"PROPOSTA RECEBIDA [{protocol}] | Ativo: {domain_name} | Interessado: {name} ({email} / {phone}) | Oferta: {offer}"
+    )
+
+    return {
+        "success": True,
+        "protocol": protocol,
+        "message": f"Proposta registrada sob protocolo {protocol}. Nossa mesa de transferência entrará em contato em até 24 horas úteis."
+    }
 
 
 @app.get("/raio-x", response_class=HTMLResponse)

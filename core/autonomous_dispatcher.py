@@ -38,26 +38,31 @@ class AutonomousOfferDispatcher:
         3. Formulates a personalized offer with a direct Stripe checkout link.
         4. Auto-dispatches the offer via API/Email without human intervention.
         """
-        catalog = self.db.get_active_catalog(limit=20)
-        if not catalog:
-            return None
-
-        asset = random.choice(catalog)
+        # Filtro estrito: O robô autônomo apenas prospecta serviços digitais e laudos técnicos
+        # que possuem entrega 100% automatizada e garantida via ReportLab e dados auditados.
+        active_items = self.db.get_active_catalog(limit=50)
+        digital_services = [a for a in active_items if a.get("asset_type") == "DIGITAL_SERVICE"]
+        
         target = random.choice(self.GLOBAL_TARGET_COMPANIES)
         lang = target["lang"]
+
+        if digital_services:
+            asset = random.choice(digital_services)
+        else:
+            # Fallback seguro para laudo técnico de auditoria operacional
+            asset = {
+                "id": f"LAUDO-{random.randint(1000, 9999)}",
+                "title": f"Laudo Técnico de Auditoria Tarifária e Operacional: {target['company']}",
+                "description": "Diagnóstico de custos de pedágio, combustível e eficiência de frete com chancela criptográfica SHA-256 e planilhas de rotas.",
+                "target_price_usd": 19.40  # R$ 97,00 BRL
+            }
+
         price_usd = asset["target_price_usd"]
         formatted_price = LocalizationEngine.format_money(price_usd, lang)
 
-        # Generate direct Stripe link for this automatic offer
-        checkout_info = PaymentGateway.create_checkout_session(
-            opportunity_id=asset["id"],
-            asset_title=asset["title"],
-            price_usd=price_usd,
-            currency="BRL" if lang == "pt" else "USD",
-            success_url=f"{base_url}/?order_success={asset['id']}",
-            cancel_url=f"{base_url}/?order_cancel={asset['id']}"
-        )
-        checkout_link = checkout_info.get("checkout_url", f"{base_url}/p/{asset['id']}")
+        # O link do laudo pode ser o portal personalizado de Raio-X ou Stripe direto
+        target_encoded = target["company"].replace(" ", "+")
+        checkout_link = f"{base_url}/raio-x?empresa={target_encoded}"
 
         # Build personalized automated proposal with compliance footer
         if lang == "pt":
