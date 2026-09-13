@@ -196,20 +196,22 @@ async def get_raio_x(request: Request, empresa: Optional[str] = None):
 
 @app.get("/sucesso", response_class=HTMLResponse)
 @app.get("/entrega", response_class=HTMLResponse)
-async def get_sucesso(request: Request, order_id: Optional[str] = None):
+async def get_sucesso(request: Request, order_id: Optional[str] = None, empresa: Optional[str] = None):
     """Página de entrega liberada com downloads reais e certificado criptográfico SHA-256."""
     import hashlib
     import random
     
+    empresa_nome = empresa.strip() if empresa and empresa.strip() else ""
     ord_id = order_id or f"{random.randint(70000, 99999)}"
-    proof = hashlib.sha256(f"ORDER:{ord_id}:MUCAMBO:DELIVERED:2026".encode('utf-8')).hexdigest()
+    proof = hashlib.sha256(f"ORDER:{ord_id}:{empresa_nome or 'MUCAMBO'}:DELIVERED:2026".encode('utf-8')).hexdigest()
 
     return templates.TemplateResponse(
         request=request,
         name="sucesso.html",
         context={
             "order_id": ord_id,
-            "proof_hash": proof
+            "proof_hash": proof,
+            "empresa_nome": empresa_nome
         }
     )
 

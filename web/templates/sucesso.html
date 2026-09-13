@@ -21,13 +21,13 @@
       </div>
       <div class="space-y-1">
         <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> PAGAMENTO APROVADO NA STRIPE
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> LAUDO TÉCNICO HOMOLOGADO &amp; LIBERADO
         </div>
         <h1 class="text-2xl sm:text-3xl font-extrabold text-white">
-          Seu Pedido foi Concluído &amp; Liberado!
+          {% if empresa_nome %}Estudo Técnico para {{ empresa_nome }}{% else %}Seu Pedido foi Concluído &amp; Liberado!{% endif %}
         </h1>
         <p class="text-xs sm:text-sm text-slate-300">
-          Identificador do Pedido: <code class="text-emerald-400 font-mono font-bold">ORD-{{ order_id }}</code> • Liquidado via Stripe em 0.38s.
+          Identificador do Protocolo: <code class="text-emerald-400 font-mono font-bold">ORD-{{ order_id }}</code> • Licença de Homologação Ativa.
         </p>
       </div>
     </div>
@@ -52,10 +52,10 @@
           </div>
           <div>
             <div class="font-bold text-white text-sm">Dossiê Executivo de Otimização &amp; Redução de Custos</div>
-            <div class="text-[11px] text-slate-400">Manual completo com as ações imediatas, desvios e cálculo de ROI.</div>
+            <div class="text-[11px] text-slate-400">Manual completo (4 páginas com capa executiva) com ações imediatas, pedágios, diesel e ROI.</div>
           </div>
         </div>
-        <a href="/api/download/dossie-pdf" target="_blank" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+        <a href="/api/download/dossie-pdf?order_id={{ order_id }}{% if empresa_nome %}&empresa={{ empresa_nome }}{% endif %}" target="_blank" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
           <span>📄 Abrir / Baixar PDF Oficial</span>
         </a>
       </div>
