@@ -230,7 +230,10 @@ async def download_dossie_pdf(order_id: Optional[str] = "89412", empresa: Option
         content=pdf_bytes,
         media_type="application/pdf",
         headers={
-            "Content-Disposition": f"inline; filename=Laudo_Tecnico_{filename_safe}.pdf"
+            "Content-Disposition": f"inline; filename=Laudo_Tecnico_{filename_safe}.pdf",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
         }
     )
 
