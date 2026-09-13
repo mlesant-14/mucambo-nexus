@@ -133,6 +133,31 @@ async def get_client_product_page(request: Request, opp_id: str, lang: Optional[
     )
 
 
+@app.get("/raio-x", response_class=HTMLResponse)
+async def get_raio_x(request: Request, empresa: Optional[str] = None):
+    """Página de auditoria e raio-x B2B personalizado para empresas prospectadas."""
+    empresa_nome = empresa.strip() if empresa and empresa.strip() else "Sua Empresa"
+    
+    from core.payment_gateway import PaymentGateway
+    # Create or link direct Stripe checkout for R$ 480
+    checkout_data = PaymentGateway.create_checkout_session(
+        opportunity_id=f"RAIO-X-{abs(hash(empresa_nome)) % 10000}",
+        asset_title=f"Dossiê de Otimização Operacional: {empresa_nome}",
+        price_usd=85.0,  # ~ R$ 480
+        currency="BRL"
+    )
+    checkout_url = checkout_data.get("checkout_url", "/?order_success=RAIO-X")
+
+    return templates.TemplateResponse(
+        request=request,
+        name="raio_x.html",
+        context={
+            "empresa_nome": empresa_nome,
+            "checkout_url": checkout_url
+        }
+    )
+
+
 @app.get("/api/summary")
 async def get_summary(lang: str = "pt"):
     summary = db.get_financial_summary()
