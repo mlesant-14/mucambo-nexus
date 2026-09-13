@@ -139,14 +139,15 @@ async def get_raio_x(request: Request, empresa: Optional[str] = None):
     empresa_nome = empresa.strip() if empresa and empresa.strip() else "Sua Empresa"
     
     from core.payment_gateway import PaymentGateway
-    # Create or link direct Stripe checkout for R$ 480
+    # Create or link direct Stripe checkout for accessible entry price of R$ 97
     checkout_data = PaymentGateway.create_checkout_session(
-        opportunity_id=f"RAIO-X-{abs(hash(empresa_nome)) % 10000}",
-        asset_title=f"Dossiê de Otimização Operacional: {empresa_nome}",
-        price_usd=85.0,  # ~ R$ 480
-        currency="BRL"
+        opportunity_id=f"LAUDO-{abs(hash(empresa_nome)) % 10000}",
+        asset_title=f"Laudo Técnico de Auditoria Operacional: {empresa_nome}",
+        price_usd=17.17,  # R$ 97.00
+        currency="BRL",
+        success_url="https://mucambo-nexus.onrender.com/sucesso"
     )
-    checkout_url = checkout_data.get("checkout_url", "/?order_success=RAIO-X")
+    checkout_url = checkout_data.get("checkout_url", "/sucesso")
 
     return templates.TemplateResponse(
         request=request,

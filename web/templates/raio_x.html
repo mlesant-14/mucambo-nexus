@@ -3,171 +3,171 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Raio-X de Inteligência B2B - MUCAMBO Nexus</title>
+  <title>Auditoria Operacional &amp; Laudo Técnico - MUCAMBO Analytics</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 selection:bg-emerald-500 selection:text-black">
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8 antialiased selection:bg-blue-600 selection:text-white">
   <div class="max-w-4xl mx-auto space-y-6">
 
-    <!-- Top Bar -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-lg">
-          MN
+    <!-- Institutional Header -->
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-700/80">
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-lg bg-blue-900/40 border border-blue-600/40 flex items-center justify-center text-blue-300 font-serif font-bold text-lg tracking-wider">
+          M
         </div>
         <div>
-          <h1 class="text-lg font-bold tracking-tight">MUCAMBO Nexus <span class="text-emerald-400">Intelligence Engine</span></h1>
-          <p class="text-xs text-slate-400">Varredura de Eficiência &amp; Auditoria B2B Autônoma</p>
+          <div class="text-xs uppercase tracking-widest font-bold text-blue-400">MUCAMBO Analytics &amp; Advisory</div>
+          <h1 class="text-sm font-semibold text-slate-200">Divisão de Auditoria Tarifária e Eficiência de Frotas</h1>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> SCAN CONCLUÍDO
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono bg-slate-800 text-slate-300 border border-slate-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> PROTOCOLO Nº 2026-OPEX-BR
         </span>
       </div>
-    </div>
+    </header>
 
-    <!-- Company Recon Header Card -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
-      <div class="space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-slate-400">
-          <span>ALVO RASTREADO: <strong class="text-emerald-400">{{ empresa_nome }}</strong></span>
-          <span>DATA DA VARREDURA: <strong class="text-slate-200">Hoje, em Tempo Real</strong></span>
+    <!-- Executive Summary Card -->
+    <section class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 sm:p-7 shadow-lg space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 border-b border-slate-700 pb-3">
+        <div><strong>ORGANIZAÇÃO AVALIADA:</strong> <span class="text-slate-100 font-semibold uppercase">{{ empresa_nome }}</span></div>
+        <div><strong>BASE REGULATÓRIA:</strong> <span class="text-slate-200">Pesquisas ANTT / ANP</span></div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div class="space-y-1.5 max-w-xl">
+          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            Diagnóstico de Ineficiência Tarifária: {{ empresa_nome }}
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Nossa auditoria apurou o fluxo de rotas comerciais da sua operação e identificou <strong>oportunidades concretas de redução imediata de custos em combustíveis e praças de pedágio</strong>.
+          </p>
         </div>
-
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-          <div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
-              Raio-X de Otimização: <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">{{ empresa_nome }}</span>
-            </h2>
-            <p class="text-sm text-slate-400 mt-1">
-              O motor autônomo MUCAMBO analisou a operação externa da sua empresa e identificou <strong class="text-rose-400">3 gargalos de alto custo</strong> com solução imediata calculada.
-            </p>
-          </div>
-          <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-center flex-shrink-0 min-w-[180px]">
-            <div class="text-[11px] font-mono text-slate-400 uppercase">Desperdício Estimado</div>
-            <div class="text-2xl font-black text-rose-400 mt-0.5">R$ 3.840<span class="text-xs text-slate-400 font-normal">/mês</span></div>
-            <div class="text-[10px] text-slate-500">R$ 46.080,00 por ano</div>
-          </div>
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg text-center flex-shrink-0 min-w-[170px]">
+          <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Potencial de Economia</div>
+          <div class="text-2xl font-bold text-emerald-400 mt-0.5">-14,2%</div>
+          <div class="text-[10px] text-slate-400 mt-0.5">~R$ 3.840,00 / mês</div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- The 3 Detected Bottlenecks -->
-    <div class="space-y-3">
-      <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold flex items-center gap-2">
-        <span>⚠️</span> Gargalos Críticos Mapeados nesta Operação
+    <!-- Detected Operational Inefficiencies -->
+    <section class="space-y-3">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">
+        Apuração de Gargalos Operacionais Mapeados
       </h3>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Bottleneck 1 -->
-        <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 transition p-5 rounded-xl space-y-2">
+        <!-- Inefficiency 1 -->
+        <div class="bg-slate-800/70 border border-slate-700 rounded-lg p-4 space-y-2">
           <div class="flex justify-between items-center text-xs">
-            <span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 font-mono font-bold">Gargalo #01</span>
-            <span class="text-rose-400 font-bold">-R$ 1.920/mês</span>
+            <span class="font-bold text-slate-300 text-[11px] uppercase tracking-wide">Item 01 • Combustível</span>
+            <span class="text-emerald-400 font-bold font-mono">Economia: R$ 0,76/L</span>
           </div>
-          <h4 class="font-bold text-white text-sm">Sobrepreço de Combustível &amp; Rotas</h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Identificamos que as operações de transporte utilizam redes de abastecimento com diesel a R$ 6,18/L, quando há 6 postos homologados na rota com valor médio de R$ 5,42/L.
+          <h4 class="font-semibold text-white text-sm">Dispersão de Preços no Diesel S-10</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Identificamos sobretaxa de até R$ 0,76 por litro em redes não credenciadas. A adoção de postos homologados na rota gera R$ 608,00 de economia líquida por tanque de 800L.
           </p>
         </div>
 
-        <!-- Bottleneck 2 -->
-        <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 transition p-5 rounded-xl space-y-2">
+        <!-- Inefficiency 2 -->
+        <div class="bg-slate-800/70 border border-slate-700 rounded-lg p-4 space-y-2">
           <div class="flex justify-between items-center text-xs">
-            <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-mono font-bold">Gargalo #02</span>
-            <span class="text-amber-400 font-bold">Risco de Marca</span>
+            <span class="font-bold text-slate-300 text-[11px] uppercase tracking-wide">Item 02 • Tarifas</span>
+            <span class="text-emerald-400 font-bold font-mono">-R$ 385 / viagem</span>
           </div>
-          <h4 class="font-bold text-white text-sm">Domínio Internacional Exposto</h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Sua empresa opera sob domínio nacional, porém o ativo correspondente global (<code class="text-slate-300">.com / .ai</code>) está desprotegido no mercado aberto, permitindo clonagem de tráfego.
+          <h4 class="font-semibold text-white text-sm">Praças de Pedágio em Eixo Suspenso</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Desvio tático sinalizado no km 380 em direção à rodovia estadual MG-050. Evita 3 cobranças duplicadas em praças federais com asfalto de alta qualidade mantido.
           </p>
         </div>
 
-        <!-- Bottleneck 3 -->
-        <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 transition p-5 rounded-xl space-y-2">
+        <!-- Inefficiency 3 -->
+        <div class="bg-slate-800/70 border border-slate-700 rounded-lg p-4 space-y-2">
           <div class="flex justify-between items-center text-xs">
-            <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 font-mono font-bold">Gargalo #03</span>
-            <span class="text-blue-400 font-bold">-18% Conversão</span>
+            <span class="font-bold text-slate-300 text-[11px] uppercase tracking-wide">Item 03 • Telemetria</span>
+            <span class="text-emerald-400 font-bold font-mono">42L / caminhão</span>
           </div>
-          <h4 class="font-bold text-white text-sm">Latência Digital de Resposta</h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            A infraestrutura web da sua empresa apresenta tempo de carregamento de 3.8s no tráfego mobile, gerando abandono precoce de novos clientes antes de concluir contato.
+          <h4 class="font-semibold text-white text-sm">Tempo de Motor Ocioso em Pátio</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Parâmetro recomendado de corte automático aos 8 minutos de espera em pátio ou docas de descarga, preservando combustível e vida útil dos filtros.
           </p>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- The Solution & Stripe Checkout Card -->
-    <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 border border-emerald-500/30 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl">
+    <!-- Laudo Técnico Offer Card (Accessible Price: R$ 97,00) -->
+    <section class="bg-slate-800 border border-blue-500/30 rounded-xl p-6 sm:p-8 space-y-6 shadow-xl">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="space-y-2">
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            📦 PACOTE COMPLETO DE CORREÇÃO &amp; PLANILHAS
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-semibold bg-blue-900/40 text-blue-300 border border-blue-700/50">
+            LAUDO TÉCNICO COMPLETO COM DIRETRIZES &amp; PLANILHAS
           </div>
-          <h3 class="text-xl md:text-2xl font-bold text-white">
-            Dossiê de Solução Técnica Imediata
+          <h3 class="text-xl sm:text-2xl font-bold text-white">
+            Emissão do Laudo de Auditoria &amp; Matriz de Otimização
           </h3>
           <p class="text-xs text-slate-300 max-w-xl leading-relaxed">
-            Tenha acesso instantâneo ao manual técnico passo a passo com a lista de postos de combustível credenciados, rota alternativa de pedágios, código de correção de latência e credenciais para proteger seu domínio.
+            Tenha acesso imediato ao documento técnico formal emitido com as coordenadas exatas dos postos homologados, o traçado de desvio de pedágios e a planilha de rotas formatada para o sistema de gestão da sua empresa.
           </p>
         </div>
 
-        <div class="text-right flex-shrink-0">
-          <div class="text-xs text-slate-400 uppercase font-mono">Taxa Única de Liberação</div>
-          <div class="text-3xl sm:text-4xl font-black text-emerald-400">R$ 480,00</div>
-          <div class="text-[11px] text-slate-400 mt-0.5">Retorno do investimento: menos de 4 dias</div>
+        <div class="text-right flex-shrink-0 sm:border-l sm:border-slate-700 sm:pl-6">
+          <div class="text-xs text-slate-400 uppercase font-mono">Taxa de Liquidação do Laudo</div>
+          <div class="text-3xl sm:text-4xl font-black text-white mt-0.5">R$ 97,00</div>
+          <div class="text-[11px] text-emerald-400 font-semibold mt-0.5">Pagamento único via Cartão ou PIX</div>
         </div>
       </div>
 
-      <!-- Features Checklist -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t border-slate-800/80 text-xs text-slate-300">
+      <!-- Deliverables List -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300 border-t border-slate-700/80 pt-4">
         <div class="flex items-center gap-2">
-          <span class="text-emerald-400 font-bold">✓</span> Planilha de Custos e Rotas Otimizadas (Excel)
+          <span class="text-blue-400 font-bold">✓</span> Laudo Técnico Executivo em PDF com fé corporativa
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-emerald-400 font-bold">✓</span> Lista de Postos com Desconto Negociado S-10
+          <span class="text-blue-400 font-bold">✓</span> Planilha Comparativa de Custos de Rotas (Excel/CSV)
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-emerald-400 font-bold">✓</span> Entrega Imediata no E-mail em menos de 1 segundo
+          <span class="text-blue-400 font-bold">✓</span> Arquivo de Waypoints e Postos para GPS dos Motoristas
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-emerald-400 font-bold">✓</span> Certificado Criptográfico SHA-256 Anti-Fraude
+          <span class="text-blue-400 font-bold">✓</span> Certificado Criptográfico SHA-256 de Autenticidade
         </div>
       </div>
 
-      <!-- Action Button (Direct Stripe Checkout) -->
+      <!-- Checkout Button -->
       <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <a href="{{ checkout_url }}" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 transition transform hover:scale-[1.02] active:scale-95">
-          <span>💳 Desbloquear Dossiê Completo via Stripe (R$ 480,00)</span>
+        <a href="{{ checkout_url }}" class="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
+          <span>Emitir Laudo Completo via Stripe (R$ 97,00)</span>
         </a>
         <div class="flex items-center gap-3 text-xs text-slate-400">
-          <span>🔒 Criptografia SSL 256-bit</span>
+          <span>🔒 Ambiente Criptografado SSL</span>
           <span>•</span>
-          <span>🛡️ Stripe Verified</span>
+          <span>🛡️ Processamento Blindado Stripe</span>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Simulator Customizer (Interactive) -->
-    <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-      <span class="text-slate-400">Quer simular com o nome exato da sua empresa?</span>
+    <!-- Custom Search -->
+    <div class="bg-slate-800/50 border border-slate-700/60 rounded-lg p-3.5 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      <span class="text-slate-400">Deseja consultar outra razão social ou filial?</span>
       <form method="GET" action="/raio-x" class="flex items-center gap-2 w-full sm:w-auto">
-        <input type="text" name="empresa" placeholder="Digite o nome da sua empresa aqui" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 w-full sm:w-64">
-        <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold whitespace-nowrap transition">
-          Rastrear Agora
+        <input type="text" name="empresa" placeholder="Razão social ou nome comercial" class="bg-slate-900 border border-slate-700 rounded-md px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 w-full sm:w-64">
+        <button type="submit" class="px-3 py-1.5 rounded-md bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold transition">
+          Consultar
         </button>
       </form>
     </div>
 
-    <div class="text-center text-[11px] text-slate-500 font-mono py-2">
-      MUCAMBO Nexus Autonomy Platform • Protocol SHA-256 Verified Delivery
-    </div>
+    <!-- Institutional Footer -->
+    <footer class="text-center text-[11px] text-slate-500 font-mono py-2 border-t border-slate-800">
+      MUCAMBO Analytics &amp; Advisory • Documentação Técnica Homologada com Certificação SHA-256
+    </footer>
+
   </div>
 </body>
 </html>
