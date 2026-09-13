@@ -136,13 +136,24 @@ function renderCatalog(items) {
 
                 <div class="card-actions">
                     <span class="source-route">Fonte: ${item.source_platform}</span>
-                    <button class="btn-buy-jit" onclick="openOrderModal('${item.id}', '${item.identifier}', '${item.formatted_price}', ${item.target_price_usd}, '${item.title}')">
-                        💳 Comprar Agora (Stripe)
-                    </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-control" style="font-size: 0.72rem; padding: 6px 10px;" onclick="copyClientLink('${item.id}')">
+                            🔗 Copiar Link Cliente
+                        </button>
+                        <button class="btn-buy-jit" onclick="openOrderModal('${item.id}', '${item.identifier}', '${item.formatted_price}', ${item.target_price_usd}, '${item.title}')">
+                            💳 Comprar Agora (Stripe)
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+function copyClientLink(oppId) {
+    const url = `${window.location.origin}/p/${oppId}`;
+    navigator.clipboard.writeText(url);
+    alert(`Link copiado com sucesso!\n\nEnvie este link para o cliente:\n${url}`);
 }
 
 async function refreshTrades() {

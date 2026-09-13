@@ -94,6 +94,45 @@ async def get_dashboard(request: Request, lang: Optional[str] = None):
     )
 
 
+@app.get("/p/{opp_id}", response_class=HTMLResponse)
+async def get_client_product_page(request: Request, opp_id: str, lang: Optional[str] = None):
+    """Clean, high-converting client storefront page (hides cost and profit metrics from the public)."""
+    opp = db.get_opportunity(opp_id)
+    if not opp:
+        return HTMLResponse("<h3>Ativo ou Produto não encontrado.</h3>", status_code=404)
+    
+    client_lang = LocalizationEngine.detect_lang(lang or request.headers.get("accept-language"))
+    localized_text = LocalizationEngine.adapt_asset_text(opp["title"], opp["description"], client_lang)
+    formatted_price = LocalizationEngine.format_money(opp["target_price_usd"], client_lang)
+    
+    # Generate direct Stripe checkout URL
+    from core.payment_gateway import PaymentGateway
+    checkout_data = PaymentGateway.create_checkout_session(
+        opportunity_id=opp["id"],
+        asset_title=localized_text["title"],
+        price_usd=opp["target_price_usd"],
+        currency="BRL" if client_lang == "pt" else "USD"
+    )
+    checkout_url = checkout_data.get("checkout_url", f"/?buy={opp_id}")
+
+    label = "Nome de Domínio Premium" if opp["asset_type"] == "EXPIRED_DOMAIN" else "Serviço Corporativo / Relatório de IA"
+
+    return templates.TemplateResponse(
+        request=request,
+        name="product.html",
+        context={
+            "asset": {
+                "id": opp["id"],
+                "title": localized_text["title"],
+                "description": localized_text["description"],
+            },
+            "asset_type_label": label,
+            "formatted_price": formatted_price,
+            "checkout_url": checkout_url
+        }
+    )
+
+
 @app.get("/api/summary")
 async def get_summary(lang: str = "pt"):
     summary = db.get_financial_summary()
