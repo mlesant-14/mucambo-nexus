@@ -136,8 +136,8 @@ function renderCatalog(items) {
 
                 <div class="card-actions">
                     <span class="source-route">Fonte: ${item.source_platform}</span>
-                    <button class="btn-buy-jit" onclick="openOrderModal('${item.id}', '${item.identifier}', '${item.formatted_price}', ${item.target_price_usd})">
-                        Simular Pedido / Comprar
+                    <button class="btn-buy-jit" onclick="openOrderModal('${item.id}', '${item.identifier}', '${item.formatted_price}', ${item.target_price_usd}, '${item.title}')">
+                        💳 Comprar Agora (Stripe)
                     </button>
                 </div>
             </div>
@@ -328,7 +328,7 @@ function updateModeUI(isSim) {
 }
 
 // JIT Order Modal
-function openOrderModal(oppId, identifier, formattedPrice, priceUsd) {
+function openOrderModal(oppId, identifier, formattedPrice, priceUsd, title) {
     const modal = document.getElementById('orderModal');
     const modalBody = document.getElementById('modalBody');
 
@@ -337,18 +337,39 @@ function openOrderModal(oppId, identifier, formattedPrice, priceUsd) {
             <p><strong>Ativo:</strong> <code>${identifier}</code></p>
             <p><strong>Preço de Venda:</strong> <span style="color: var(--accent-green); font-size: 1.2rem; font-weight: bold;">${formattedPrice}</span></p>
             <div style="background: rgba(0, 180, 216, 0.1); padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 3px solid var(--accent-blue);">
-                Ao clicar em "Executar Liquidação JIT", o sistema comprará o ativo na fonte instantaneamente por seu custo de atacado e transferirá imediatamente para o comprador, creditando o lucro na sua carteira.
+                A compra é processada em ambiente seguro. O ativo é adquirido e transferido instantaneamente na confirmação do pagamento com certificado criptográfico.
             </div>
-            <div>
-                <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">Nome do Comprador / Empresa:</label>
-                <input type="text" id="buyerNameInput" value="Global Client Ltd" style="width: 100%; padding: 8px; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff;">
-            </div>
-            <button class="btn-buy-jit" style="padding: 10px; font-size: 0.9rem;" onclick="confirmOrder('${oppId}')">
-                Confirmar e Liquidar Spread
+            
+            <button class="btn-buy-jit" style="padding: 12px; font-size: 0.95rem; background: linear-gradient(90deg, #635bff, #00d2ff); color: #fff; font-weight: bold;" onclick="payWithStripe('${oppId}')">
+                💳 Pagar Agora com Cartão (Stripe Checkout)
+            </button>
+
+            <div style="text-align: center; font-size: 0.75rem; color: var(--text-secondary); margin: 4px 0;">— ou para teste interno imediato —</div>
+
+            <button class="btn-control" style="width: 100%; padding: 8px; font-size: 0.8rem;" onclick="confirmOrder('${oppId}')">
+                ⚡ Executar Liquidação Direta (Interna)
             </button>
         </div>
     `;
     modal.style.display = 'flex';
+}
+
+async function payWithStripe(oppId) {
+    try {
+        const res = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ opportunity_id: oppId })
+        });
+        const data = await res.json();
+        if (data.checkout_url) {
+            window.location.href = data.checkout_url;
+        } else {
+            alert('Erro ao abrir checkout: ' + (data.error || 'Verifique as chaves'));
+        }
+    } catch (e) {
+        console.error('Error opening Stripe checkout', e);
+    }
 }
 
 function closeOrderModal() {
