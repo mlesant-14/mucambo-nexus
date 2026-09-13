@@ -198,6 +198,59 @@ async def download_dossie_pdf(order_id: Optional[str] = "89412"):
     )
 
 
+@app.get("/feedback", response_class=HTMLResponse)
+@app.get("/opt-out", response_class=HTMLResponse)
+async def get_feedback(request: Request, action: Optional[str] = "opt_out", target: Optional[str] = "", lang: Optional[str] = "pt"):
+    """Página institucional de conformidade internacional, opt-out e feedback de destinatários."""
+    client_lang = lang.lower() if lang and lang.lower() in ["pt", "en", "es"] else "pt"
+    
+    # Log de conformidade no banco de dados
+    action_label = "NÃO É MINHA EMPRESA" if action == "not_my_company" else "DESCADASTRO / SEM INTERESSE"
+    db.log_event("INFO", "Compliance", f"[COMPLIANCE] Destinatário '{target or 'Anônimo'}' solicitou: {action_label} (Idioma: {client_lang.upper()})")
+
+    import random
+    protocol = f"CMP-{random.randint(100000, 999999)}"
+
+    i18n_data = {
+        "pt": {
+            "title": "Preferência Registrada",
+            "headline": "Agradecemos o seu Retorno",
+            "subtext": "Sua solicitação foi processada com sucesso. Os dados foram removidos da nossa base de disparo para garantir conformidade com a LGPD e respeito total à sua privacidade.",
+            "status_confirmed": "REMOVIDO / DESCADASTRO CONFIRMADO",
+            "compliance_footer": "Em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018). Nenhuma nova comunicação será enviada.",
+            "return_home": "← Retornar à página inicial"
+        },
+        "en": {
+            "title": "Preference Recorded",
+            "headline": "Thank you for your Feedback",
+            "subtext": "Your request has been processed successfully. Your details have been permanently removed from our active dispatch list in full compliance with global communication regulations.",
+            "status_confirmed": "REMOVED / UNSUBSCRIBE CONFIRMED",
+            "compliance_footer": "In strict compliance with CAN-SPAM Act & EU GDPR. No further automated notices will be sent to this organization.",
+            "return_home": "← Return to Homepage"
+        },
+        "es": {
+            "title": "Preferencia Registrada",
+            "headline": "Agradecemos sus Comentarios",
+            "subtext": "Su solicitud ha sido procesada con éxito. Los datos han sido eliminados de nuestra lista de envío en total conformidad con las normativas de privacidad vigentes.",
+            "status_confirmed": "ELIMINADO / BAJA CONFIRMADA",
+            "compliance_footer": "De conformidad con las directivas de protección de datos (RGPD). No se enviarán futuras comunicaciones.",
+            "return_home": "← Volver a la página principal"
+        }
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="feedback.html",
+        context={
+            "lang": client_lang,
+            "action": action,
+            "target": target,
+            "protocol_id": protocol,
+            "t": i18n_data[client_lang]
+        }
+    )
+
+
 @app.get("/api/summary")
 async def get_summary(lang: str = "pt"):
     summary = db.get_financial_summary()

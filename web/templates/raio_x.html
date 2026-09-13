@@ -163,6 +163,20 @@
       </form>
     </div>
 
+    <!-- Compliance & Opt-Out Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 gap-2">
+      <span>Esta não é a sua organização ou deseja atualizar suas preferências?</span>
+      <div class="flex items-center gap-3">
+        <a href="/feedback?action=not_my_company&target={{ empresa_nome }}&lang=pt" class="text-blue-400 hover:underline">
+          Não é minha empresa
+        </a>
+        <span>•</span>
+        <a href="/feedback?action=opt_out&target={{ empresa_nome }}&lang=pt" class="text-slate-400 hover:text-white hover:underline">
+          Não tenho interesse
+        </a>
+      </div>
+    </div>
+
     <!-- Institutional Footer -->
     <footer class="text-center text-[11px] text-slate-500 font-mono py-2 border-t border-slate-800">
       MUCAMBO Analytics &amp; Advisory • Documentação Técnica Homologada com Certificação SHA-256

@@ -59,30 +59,42 @@ class AutonomousOfferDispatcher:
         )
         checkout_link = checkout_info.get("checkout_url", f"{base_url}/p/{asset['id']}")
 
-        # Build personalized automated proposal
+        # Build personalized automated proposal with compliance footer
         if lang == "pt":
-            subject = f"MUCAMBO Nexus: Oferta Exclusiva de {asset['title']} para {target['company']}"
+            subject = f"MUCAMBO Advisory: Análise Tarifária e Otimização para {target['company']}"
+            opt_not_my = f"{base_url}/feedback?action=not_my_company&target={target['company']}&lang=pt"
+            opt_out = f"{base_url}/feedback?action=opt_out&target={target['company']}&lang=pt"
             body = (
                 f"Prezado(a) {target['contact']} ({target['company']}),\n\n"
-                f"Nosso sistema autônomo de inteligência de mercado identificou uma oportunidade de alto impacto para a sua operação:\n"
-                f"Ativo: {asset['title']}\n"
+                f"Nossa divisão de consultoria e auditoria tarifária identificou oportunidades de corte de custos diretos para a sua operação:\n"
+                f"Objeto: {asset['title']}\n"
                 f"Resumo: {asset['description']}\n\n"
-                f"Valor de liquidação imediata: {formatted_price}\n"
-                f"Link seguro para aquisição e entrega instantânea: {checkout_link}\n\n"
-                f"Entrega digital garantida com certificado criptográfico SHA-256.\n\n"
-                f"MUCAMBO Nexus Autonomous Engine"
+                f"Valor de liquidação do laudo técnico: {formatted_price}\n"
+                f"Link seguro para emissão e liberação imediata: {checkout_link}\n\n"
+                f"Autenticidade garantida com emissão de Certificado Criptográfico SHA-256.\n\n"
+                f"MUCAMBO Analytics & Advisory\n\n"
+                f"────────────────────────────────────────\n"
+                f"Preferências de Comunicação e LGPD:\n"
+                f"• Não é a sua empresa? Informe aqui: {opt_not_my}\n"
+                f"• Não tem interesse / Descadastrar: {opt_out}\n"
             )
         else:
-            subject = f"MUCAMBO Nexus: High-Priority Deliverable for {target['company']}"
+            subject = f"MUCAMBO Advisory: Operational Audit Deliverable for {target['company']}"
+            opt_not_my = f"{base_url}/feedback?action=not_my_company&target={target['company']}&lang=en"
+            opt_out = f"{base_url}/feedback?action=opt_out&target={target['company']}&lang=en"
             body = (
                 f"Dear {target['contact']} at {target['company']},\n\n"
-                f"Our autonomous market scanner has identified a verified high-yield intangible asset for your sector:\n"
+                f"Our corporate advisory and operational audit team has identified a strategic efficiency deliverable for your sector:\n"
                 f"Deliverable: {asset['title']}\n"
                 f"Summary: {asset['description']}\n\n"
-                f"Instant Settlement Price: {formatted_price}\n"
+                f"Settlement Price: {formatted_price}\n"
                 f"Direct Secure Order Link: {checkout_link}\n\n"
                 f"Guaranteed digital delivery with immutable SHA-256 cryptographic proof.\n\n"
-                f"MUCAMBO Nexus Autonomous Engine"
+                f"MUCAMBO Analytics & Advisory\n\n"
+                f"────────────────────────────────────────\n"
+                f"Communication Preferences (CAN-SPAM / GDPR Compliance):\n"
+                f"• Not your company? Inform us here: {opt_not_my}\n"
+                f"• Not interested / Unsubscribe: {opt_out}\n"
             )
 
         # Send proposal automatically
