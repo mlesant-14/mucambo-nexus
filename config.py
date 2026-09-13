@@ -14,8 +14,8 @@ load_dotenv(BASE_DIR / ".env")
 DB_PATH = BASE_DIR / "mucambo_arbitrage.db"
 
 # System Operation Modes
-# Set SIMULATION_MODE=false in .env to switch to real production execution
-SIMULATION_MODE = os.getenv("SIMULATION_MODE", "true").lower() in ["true", "1", "yes"]
+# Set SIMULATION_MODE=false in .env/Render to switch to real production execution
+SIMULATION_MODE = os.getenv("SIMULATION_MODE", "false").lower() in ["true", "1", "yes"]
 AUTO_EXECUTE_HIGH_CONFIDENCE = True  # Automatically execute when spread exceeds threshold
 MIN_PROFIT_MARGIN_PERCENT = float(os.getenv("MIN_PROFIT_MARGIN_PERCENT", "30.0"))
 MIN_NET_PROFIT_USD = float(os.getenv("MIN_NET_PROFIT_USD", "15.0"))
