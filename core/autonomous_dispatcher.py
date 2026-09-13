@@ -66,17 +66,17 @@ class AutonomousOfferDispatcher:
 
         # Build personalized automated proposal with compliance footer
         if lang == "pt":
-            subject = f"MUCAMBO Advisory: Análise Tarifária e Otimização para {target['company']}"
+            subject = f"MUCAMBO Advisory: Estudo Técnico Operacional Gratuito para {target['company']}"
             opt_not_my = f"{base_url}/feedback?action=not_my_company&target={target['company']}&lang=pt"
             opt_out = f"{base_url}/feedback?action=opt_out&target={target['company']}&lang=pt"
             body = (
                 f"Prezado(a) {target['contact']} ({target['company']}),\n\n"
-                f"Nossa divisão de consultoria e auditoria tarifária identificou oportunidades de corte de custos diretos para a sua operação:\n"
+                f"Nossa divisão de consultoria e inteligência tarifária preparou um estudo de otimização de custos para a sua operação:\n"
                 f"Objeto: {asset['title']}\n"
-                f"Resumo: {asset['description']}\n\n"
-                f"Valor de liquidação do laudo técnico: {formatted_price}\n"
-                f"Link seguro para emissão e liberação imediata: {checkout_link}\n\n"
-                f"Autenticidade garantida com emissão de Certificado Criptográfico SHA-256.\n\n"
+                f"Diagnóstico: {asset['description']}\n\n"
+                f"Condição: CORTESIA INSTITUCIONAL (Valor regular: {formatted_price} -> R$ 0,00 para homologação e feedback).\n"
+                f"Link seguro para emissão e download imediato: {checkout_link}\n\n"
+                f"O estudo inclui laudo executivo de 4 páginas em PDF, planilha de rotas (Excel/CSV), waypoints GPS e Certificado Criptográfico SHA-256.\n\n"
                 f"MUCAMBO Analytics & Advisory\n\n"
                 f"────────────────────────────────────────\n"
                 f"Preferências de Comunicação e LGPD:\n"
@@ -84,17 +84,17 @@ class AutonomousOfferDispatcher:
                 f"• Não tem interesse / Descadastrar: {opt_out}\n"
             )
         else:
-            subject = f"MUCAMBO Advisory: Operational Audit Deliverable for {target['company']}"
+            subject = f"MUCAMBO Advisory: Complimentary Operational Audit for {target['company']}"
             opt_not_my = f"{base_url}/feedback?action=not_my_company&target={target['company']}&lang=en"
             opt_out = f"{base_url}/feedback?action=opt_out&target={target['company']}&lang=en"
             body = (
                 f"Dear {target['contact']} at {target['company']},\n\n"
-                f"Our corporate advisory and operational audit team has identified a strategic efficiency deliverable for your sector:\n"
+                f"Our corporate advisory team has prepared an operational benchmark study for your sector:\n"
                 f"Deliverable: {asset['title']}\n"
-                f"Summary: {asset['description']}\n\n"
-                f"Settlement Price: {formatted_price}\n"
-                f"Direct Secure Order Link: {checkout_link}\n\n"
-                f"Guaranteed digital delivery with immutable SHA-256 cryptographic proof.\n\n"
+                f"Scope: {asset['description']}\n\n"
+                f"Access: COMPLIMENTARY TRIAL (Regular price: {formatted_price} -> Free for evaluation and feedback).\n"
+                f"Instant Download Link: {checkout_link}\n\n"
+                f"Includes 4-page executive PDF report, routing spreadsheet, driver GPS waypoints, and SHA-256 cryptographic seal.\n\n"
                 f"MUCAMBO Analytics & Advisory\n\n"
                 f"────────────────────────────────────────\n"
                 f"Communication Preferences (CAN-SPAM / GDPR Compliance):\n"
@@ -131,7 +131,7 @@ class AutonomousOfferDispatcher:
 
         self.db.log_event(
             "INFO", "AutoOffer",
-            f"[AUTO-DISPATCH] Oferta enviada automaticamente para {target['contact']} ({target['company']}) | Ativo: '{asset['identifier']}' ({formatted_price}) | Canal: {dispatch_channel}"
+            f"[AUTO-DISPATCH] Oferta enviada automaticamente para {target['contact']} ({target['company']}) | Ativo: '{asset['title']}' (GRATUITO/Cortesia) | Canal: {dispatch_channel}"
         )
 
         # Registra formalmente na tabela de monitoramento de outreach
@@ -140,7 +140,7 @@ class AutonomousOfferDispatcher:
             recipient_name=target["contact"],
             company_name=target["company"],
             asset_title=asset["title"],
-            price_formatted=formatted_price,
+            price_formatted="GRATUITO (Cortesia)",
             dispatch_channel=dispatch_channel
         )
 

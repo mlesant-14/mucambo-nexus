@@ -117,37 +117,40 @@
         </div>
 
         <div class="text-right flex-shrink-0 sm:border-l sm:border-slate-700 sm:pl-6">
-          <div class="text-xs text-slate-400 uppercase font-mono">Taxa de Liquidação do Laudo</div>
-          <div class="text-3xl sm:text-4xl font-black text-white mt-0.5">R$ 97,00</div>
-          <div class="text-[11px] text-emerald-400 font-semibold mt-0.5">Pagamento único via Cartão ou PIX</div>
+          <div class="text-xs text-slate-400 uppercase font-mono">Emissão Institucional</div>
+          <div class="flex items-center gap-2 mt-0.5 justify-end">
+            <span class="text-xs line-through text-slate-500 font-mono">R$ 97,00</span>
+            <span class="text-2xl sm:text-3xl font-black text-emerald-400">GRATUITO</span>
+          </div>
+          <div class="text-[11px] text-emerald-400 font-semibold mt-0.5">Cortesia de Homologação 2026</div>
         </div>
       </div>
 
       <!-- Deliverables List -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300 border-t border-slate-700/80 pt-4">
         <div class="flex items-center gap-2">
-          <span class="text-blue-400 font-bold">✓</span> Laudo Técnico Executivo em PDF com fé corporativa
+          <span class="text-emerald-400 font-bold">✓</span> Laudo Técnico Executivo em PDF (4 Páginas com Capa)
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-blue-400 font-bold">✓</span> Planilha Comparativa de Custos de Rotas (Excel/CSV)
+          <span class="text-emerald-400 font-bold">✓</span> Planilha Comparativa de Custos de Rotas (Excel/CSV)
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-blue-400 font-bold">✓</span> Arquivo de Waypoints e Postos para GPS dos Motoristas
+          <span class="text-emerald-400 font-bold">✓</span> Arquivo de Waypoints e Postos para GPS dos Motoristas
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-blue-400 font-bold">✓</span> Certificado Criptográfico SHA-256 de Autenticidade
+          <span class="text-emerald-400 font-bold">✓</span> Certificado Criptográfico SHA-256 de Autenticidade
         </div>
       </div>
 
-      <!-- Checkout Button -->
+      <!-- Action Button: Free Instant Generation -->
       <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <a href="{{ checkout_url }}" class="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
-          <span>Emitir Laudo Completo via Stripe (R$ 97,00)</span>
+        <a href="/sucesso?empresa={{ empresa_nome }}" class="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
+          <span>Gerar Meu Laudo Técnico Oficial Grátis (Download Imediato)</span>
         </a>
         <div class="flex items-center gap-3 text-xs text-slate-400">
-          <span>🔒 Ambiente Criptografado SSL</span>
+          <span>⚡ Sem necessidade de cartão</span>
           <span>•</span>
-          <span>🛡️ Processamento Blindado Stripe</span>
+          <span>📄 Liberação Imediata em PDF</span>
         </div>
       </div>
     </section>
