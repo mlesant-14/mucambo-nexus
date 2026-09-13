@@ -25,10 +25,9 @@ class AutonomousScheduler:
         self.arbitrage_engine = ArbitrageEngine(db)
         self.fulfillment_engine = FulfillmentEngine(db)
         self.dispatcher = AutonomousOfferDispatcher(db)
+        # Foco exclusivo no Ativo 1: Laudos Técnicos e Auditorias Operacionais B2B
         self.hunters: List[BaseHunter] = [
-            DomainHunter(),
-            DigitalServiceHunter(),
-            PredictionHunter()
+            DigitalServiceHunter()
         ]
         self.is_running = False
         self._task: Optional[asyncio.Task] = None

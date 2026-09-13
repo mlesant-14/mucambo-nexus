@@ -16,40 +16,40 @@ class DigitalServiceHunter(BaseHunter):
 
     SERVICE_TEMPLATES = [
         {
-            "code": "B2B_LEAD_ENRICHMENT",
-            "title": "Relatório de Enriquecimento de Leads B2B & Decisores",
-            "desc": "Extração e validação de contatos de tomadores de decisão em empresas de tecnologia.",
-            "source_cost": (1.20, 3.50),
-            "target_price": (49.00, 99.00),
-            "source": "Enrichment API Pipeline (Apollo/Hunter/Perplexity)",
-            "target": "Global SaaS Outreach Market"
+            "code": "B2B_LOGISTICS_AUDIT",
+            "title": "Laudo Técnico de Auditoria Tarifária e Rotas (ANTT / ANP)",
+            "desc": "Diagnóstico completo de custos de pedágio, diesel S10 e tabelas de frete mínimo com chancela SHA-256 e planilhas.",
+            "source_cost": (0.40, 1.20),
+            "target_price": (19.40, 19.40),  # R$ 97,00 exato
+            "source": "MUCAMBO Analytics Core Engine",
+            "target": "Mercado Corporativo B2B e Transportadoras"
         },
         {
-            "code": "COMPETITIVE_INTEL_REPORT",
-            "title": "Relatório de Inteligência Competitiva e Preços de Mercado",
-            "desc": "Varredura profunda com síntese executiva dos principais concorrentes de um setor.",
-            "source_cost": (2.10, 5.00),
-            "target_price": (89.00, 159.00),
-            "source": "Deep Research LLM Automation Engine",
-            "target": "Enterprise Strategy Desk"
+            "code": "FLEET_OPERATIONAL_DIAGNOSTIC",
+            "title": "Diagnóstico de Eficiência de Frota e Consumo Operacional",
+            "desc": "Auditoria analítica de consumo por eixo, paradas não programadas e dispersão quilométrica.",
+            "source_cost": (0.50, 1.50),
+            "target_price": (19.40, 19.40),  # R$ 97,00 exato
+            "source": "Fleet Audit Automation Cluster",
+            "target": "Empresas de Logística e Frotistas"
         },
         {
-            "code": "CYBER_VULNERABILITY_AUDIT",
-            "title": "Auditoria de Superfície de Ataque e Segurança Web",
-            "desc": "Varredura não invasiva de certificados SSL, cabeçalhos de segurança e portas expostas.",
-            "source_cost": (1.50, 4.00),
-            "target_price": (69.00, 139.00),
-            "source": "Automated Shodan/Nmap Cloud API",
-            "target": "SMB Security Compliance Exchange"
+            "code": "SUPPLY_CHAIN_COMPLIANCE",
+            "title": "Relatório de Conformidade Regulatória de Carga e Fretes",
+            "desc": "Verificação de conformidade de tabelas oficiais, validação de parâmetros fiscais e seguro de carga.",
+            "source_cost": (0.80, 2.00),
+            "target_price": (39.00, 39.00),  # R$ 195,00 premium
+            "source": "Regulatory Compliance Scraper",
+            "target": "Embarcadores e Grandes Distribuidores"
         },
         {
-            "code": "SEO_TECHNICAL_BLUEPRINT",
-            "title": "Auditoria Técnica de SEO e Otimização de Performance",
-            "desc": "Diagnóstico de Core Web Vitals, arquitetura de links internos e canibalização de keywords.",
-            "source_cost": (1.00, 2.80),
-            "target_price": (55.00, 110.00),
-            "source": "Lighthouse & ScreamingFrog API Cluster",
-            "target": "Global E-Commerce Agencies"
+            "code": "ROUTE_OPTIMIZATION_DOSSIER",
+            "title": "Dossiê Executivo de Redução de Custos de Malha Rodoviária",
+            "desc": "Mapeamento vetorial de desvios, balanças ativas e waypoints GPS KML para distribuição urbana e interestadual.",
+            "source_cost": (0.60, 1.40),
+            "target_price": (19.40, 19.40),  # R$ 97,00 exato
+            "source": "GIS & Waypoint Synthesis Pipeline",
+            "target": "Gestores de Logística e Suprimentos"
         }
     ]
 
