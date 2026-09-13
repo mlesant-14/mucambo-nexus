@@ -13,18 +13,27 @@ class PaymentGateway:
         opportunity_id: str,
         asset_title: str,
         price_usd: float,
-        currency: str = "USD",
-        success_url: str = "http://localhost:8000/?success=true",
-        cancel_url: str = "http://localhost:8000/?canceled=true"
+        currency: str = "BRL",
+        success_url: str = "https://mucambo-nexus.onrender.com/?success=true",
+        cancel_url: str = "https://mucambo-nexus.onrender.com/?canceled=true"
     ) -> Dict[str, Any]:
-        """Creates a real Stripe or Mercado Pago checkout session."""
+        """Creates a real Stripe checkout session with local currency support."""
         stripe_key = os.getenv("STRIPE_SECRET_KEY")
         
         if stripe_key and stripe_key.startswith("sk_"):
             try:
                 import stripe
                 stripe.api_key = stripe_key
-                unit_amount_cents = int(price_usd * 100)
+                
+                # If BRL, convert from USD using reference rate
+                from config import CURRENCY_RATES
+                if currency.upper() == "BRL":
+                    rate = CURRENCY_RATES.get("BRL", 5.65)
+                    final_amount = round(price_usd * rate, 2)
+                    unit_amount_cents = int(final_amount * 100)
+                else:
+                    currency = "USD"
+                    unit_amount_cents = int(price_usd * 100)
                 
                 session = stripe.checkout.Session.create(
                     payment_method_types=["card"],
@@ -33,8 +42,8 @@ class PaymentGateway:
                             "currency": currency.lower(),
                             "unit_amount": unit_amount_cents,
                             "product_data": {
-                                "name": f"MUCAMBO Digital Asset: {asset_title}",
-                                "description": "Instant Just-in-Time digital delivery guaranteed.",
+                                "name": f"MUCAMBO Ativo Digital: {asset_title}",
+                                "description": "Entrega digital instantanea e verificada.",
                             },
                         },
                         "quantity": 1,
