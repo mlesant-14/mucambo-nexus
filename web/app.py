@@ -243,6 +243,16 @@ async def get_outreach_campaign(request: Request):
     return {"campaign": campaign, "total": len(campaign)}
 
 
+@app.post("/api/reset-ledger")
+async def reset_ledger():
+    db.reset_test_data()
+    await broadcast_ws({
+        "type": "trade_executed",
+        "data": {"summary": db.get_financial_summary()}
+    })
+    return {"status": "success", "message": "Ledger zerado para producao real"}
+
+
 @app.get("/api/stripe/test-checkout")
 async def stripe_test_checkout(request: Request):
     """Generates an immediate 1-click test checkout session to validate the full sales loop."""

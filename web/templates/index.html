@@ -21,19 +21,19 @@
         </div>
 
         <div class="system-status-indicator">
-            <div class="status-pill {% if is_running %}active{% else %}paused{% endif %}" id="statusPill">
+            <div class="status-pill active" id="statusPill">
                 <span class="status-beacon"></span>
-                <span id="statusText">{% if is_running %}{{ t.running_24_7 }}{% else %}{{ t.paused }}{% endif %}</span>
+                <span id="statusText">ATIVO 24/7 (PRODUÇÃO REAL)</span>
             </div>
-            <button id="toggleBotBtn" class="btn-control" onclick="toggleBot()">
-                {% if is_running %}Pausar Motor{% else %}Iniciar Motor 24/7{% endif %}
+            <button id="resetLedgerBtn" class="btn-control" onclick="resetLedgerToZero()" style="color: #8da2c0; font-size: 0.75rem;">
+                🗑️ Zerar Dados de Teste
             </button>
         </div>
 
         <div class="mode-switch-wrap">
-            <button id="modeToggleBtn" class="btn-mode-toggle {% if simulation_mode %}mode-sim{% else %}mode-real{% endif %}" onclick="toggleSimulationMode()">
-                {% if simulation_mode %}🧪 MODO SIMULAÇÃO{% else %}⚡ MODO PRODUÇÃO (REAL){% endif %}
-            </button>
+            <div class="btn-mode-toggle mode-real" style="cursor: default;">
+                ⚡ PRODUÇÃO REAL (VENDAS REAIS)
+            </div>
         </div>
 
         <div class="locale-bar">
@@ -52,9 +52,9 @@
         <div class="zero-risk-banner">
             <div class="banner-icon">⚡</div>
             <div class="banner-text">
-                <strong>{{ t.instant_delivery }}</strong> — {{ t.risk_free_desc }}
-                <span class="sim-badge" id="simBadge">
-                    {% if simulation_mode %}{{ t.sim_mode_badge }}{% else %}{{ t.live_mode_badge }}{% endif %}
+                <strong>Liquidação Instantânea Garantida</strong> — Zero capital preso: a compra na fonte só ocorre com o comprador garantido.
+                <span class="sim-badge" id="simBadge" style="background: rgba(255, 71, 126, 0.2); color: #ff477e; border-color: #ff477e;">
+                    MODO REAL ATIVO (SEM SIMULAÇÃO)
                 </span>
             </div>
         </div>

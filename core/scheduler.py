@@ -81,26 +81,11 @@ class AutonomousScheduler:
                             "summary": self.db.get_financial_summary()
                         })
 
-                # 2. Market Simulation: Occasionally a global buyer matches an active listing
-                # Mimics 24/7 global liquidity and verified buyer matching
-                if random.random() < 0.45:
-                    catalog = self.db.get_active_catalog(limit=10)
-                    if catalog:
-                        target_opp = random.choice(catalog)
-                        buyer = random.choice(self.GLOBAL_BUYERS)
-                        trade_result = await self.fulfillment_engine.execute_trade(
-                            opportunity_id=target_opp["id"],
-                            buyer_name=buyer["name"],
-                            buyer_country=buyer["country"],
-                            buyer_currency=buyer["currency"]
-                        )
-                        if trade_result.get("success"):
-                            await self._broadcast("trade_executed", {
-                                "trade": trade_result,
-                                "summary": self.db.get_financial_summary()
-                            })
+                # No modo real, o sistema NÃO simula compradores fictícios.
+                # Ele apenas vasculha o mundo, alimenta a vitrine e aguarda compras reais de clientes via Stripe/Webhooks.
+                pass
 
-                # 3. Sleep until next scan cycle
+                # 2. Sleep until next scan cycle
                 await asyncio.sleep(random.uniform(SCAN_INTERVAL_SECONDS - 1, SCAN_INTERVAL_SECONDS + 2))
 
             except asyncio.CancelledError:

@@ -180,6 +180,16 @@ class Database:
             row = cursor.fetchone()
             return dict(row) if row else None
 
+    def reset_test_data(self):
+        """Wipes test orders and transactions so the ledger starts at $0.00 for 100% real production."""
+        with self._get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM transactions")
+            cursor.execute("DELETE FROM orders")
+            cursor.execute("UPDATE opportunities SET status = 'LISTED' WHERE status = 'SETTLED'")
+            conn.commit()
+        self.log_event("WARNING", "Database", "Ledger reset to $0.00 for 100% Real Production.")
+
     def log_event(self, level: str, source: str, message: str):
         with self._get_conn() as conn:
             cursor = conn.cursor()

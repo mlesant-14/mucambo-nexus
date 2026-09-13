@@ -487,12 +487,19 @@ async function triggerStripeValidation() {
                     <p style="font-size: 0.75rem; color: var(--text-secondary);">
                         Assim que o webhook receber a aprovação, o sistema dispara a compra na fonte e entrega instantaneamente o relatório!
                     </p>
-                    <button class="btn-control" style="width: 100%; padding: 8px;" onclick="closeOrderModal()">Entendido</button>
-                </div>
-            `;
-            modal.style.display = 'flex';
+// 1-Click Reset to Zero for Clean Real Production
+async function resetLedgerToZero() {
+    const confirmed = confirm("Deseja ZERAR todos os dados e transações de teste para começar do zero em R$ 0,00 reais?");
+    if (!confirmed) return;
+
+    try {
+        const res = await fetch('/api/reset-ledger', { method: 'POST' });
+        const data = await res.json();
+        if (data.status === "success") {
+            await refreshAllData();
+            alert("Histórico de testes zerado com sucesso! O painel agora computará apenas vendas reais.");
         }
     } catch (e) {
-        console.error('Error triggering stripe validation', e);
+        console.error('Error resetting ledger', e);
     }
 }
