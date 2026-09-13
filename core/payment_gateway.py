@@ -14,7 +14,7 @@ class PaymentGateway:
         asset_title: str,
         price_usd: float,
         currency: str = "BRL",
-        success_url: str = "https://mucambo-nexus.onrender.com/?success=true",
+        success_url: str = "https://mucambo-nexus.onrender.com/sucesso",
         cancel_url: str = "https://mucambo-nexus.onrender.com/?canceled=true"
     ) -> Dict[str, Any]:
         """Creates a real Stripe checkout session with local currency support."""

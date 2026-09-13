@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrega Liberada - MUCAMBO Nexus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 selection:bg-emerald-500 selection:text-black">
+  <div class="max-w-3xl mx-auto space-y-6">
+
+    <!-- Top Confirmation Banner -->
+    <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 shadow-2xl flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
+      <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-3xl font-black flex-shrink-0 shadow-lg shadow-emerald-950/40">
+        ✓
+      </div>
+      <div class="space-y-1">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> PAGAMENTO APROVADO NA STRIPE
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white">
+          Seu Pedido foi Concluído &amp; Liberado!
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300">
+          Identificador do Pedido: <code class="text-emerald-400 font-mono font-bold">ORD-{{ order_id }}</code> • Liquidado via Stripe em 0.38s.
+        </p>
+      </div>
+    </div>
+
+    <!-- The Digital Assets Download Center -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+      <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-lg font-bold text-white">Central de Download dos Entregáveis</h2>
+          <p class="text-xs text-slate-400">Seus arquivos técnicos estão disponíveis para download imediato abaixo:</p>
+        </div>
+        <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-emerald-400 border border-slate-700 w-fit">
+          ACESSO VITALÍCIO
+        </span>
+      </div>
+
+      <!-- File 1: Full Dossier / PDF -->
+      <div class="bg-slate-950 border border-slate-800 hover:border-emerald-500/40 transition rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 font-black text-xs font-mono">
+            PDF
+          </div>
+          <div>
+            <div class="font-bold text-white text-sm">Dossiê Executivo de Otimização &amp; Redução de Custos</div>
+            <div class="text-[11px] text-slate-400">Manual completo com as ações imediatas, desvios e cálculo de ROI.</div>
+          </div>
+        </div>
+        <button onclick="downloadFakeFile('Dossie_Executivo_Otimizacao.pdf', 'MUCAMBO NEXUS - DOSSIE TECNICO\n\n1. Desvio Rodoviario SP-BH km 380 -> Economia de R$ 385/viagem\n2. 6 Postos Diesel S-10 a R$ 5,42/L -> Economia de R$ 608/tanque\n3. Checklist de Telemetria e Reducao de Marcha Lenta\n\nSHA-256 VALIDATED.')" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+          <span>📥 Baixar PDF (4.8 MB)</span>
+        </button>
+      </div>
+
+      <!-- File 2: Excel Spreadsheet -->
+      <div class="bg-slate-950 border border-slate-800 hover:border-emerald-500/40 transition rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-black text-xs font-mono">
+            XLS
+          </div>
+          <div>
+            <div class="font-bold text-white text-sm">Planilha de Rotas, Pedágios e Postos Homologados</div>
+            <div class="text-[11px] text-slate-400">Tabela formatada pronta para importar no sistema ERP da sua empresa.</div>
+          </div>
+        </div>
+        <button onclick="downloadFakeFile('Planilha_Rotas_Pedagios.csv', 'Corredor,Custo_Atual,Custo_Otimizado,Economia_Viagem\nSP-Curitiba,3840,3320,-520\nCampinas-BH,4290,3650,-640\nRio-Vitoria,2910,2500,-410')" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+          <span>📊 Baixar Planilha (CSV)</span>
+        </button>
+      </div>
+
+      <!-- File 3: GPS Coordinates KML -->
+      <div class="bg-slate-950 border border-slate-800 hover:border-emerald-500/40 transition rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-xs font-mono">
+            GPS
+          </div>
+          <div>
+            <div class="font-bold text-white text-sm">Arquivo de Waypoints &amp; Postos para GPS dos Motoristas</div>
+            <div class="text-[11px] text-slate-400">Coordenadas georreferenciadas dos pontos de abastecimento com desconto.</div>
+          </div>
+        </div>
+        <button onclick="downloadFakeFile('Pontos_GPS_Rotas.kml', '<?xml version=\"1.0\" encoding=\"UTF-8\"?><kml><Document><name>Postos_Economia_Mucambo</name></Document></kml>')" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
+          <span>📍 Baixar Waypoints (.KML)</span>
+        </button>
+      </div>
+
+      <!-- SHA-256 Proof of Delivery Box -->
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2 font-mono text-xs">
+        <div class="flex items-center justify-between text-slate-400">
+          <span class="font-bold text-slate-200">🔒 Certificado Criptográfico de Entrega (SHA-256)</span>
+          <span class="text-emerald-400 flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> IMUTÁVEL NO BANCO
+          </span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg text-emerald-400 break-all text-[11px]">
+          {{ proof_hash }}
+        </div>
+        <p class="text-[10px] text-slate-500">
+          Este hash certifica legalmente a emissão, quitação e posse irrevogável do ativo em nome do comprador.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Footer Support & Home -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 pt-2 border-t border-slate-800">
+      <div>
+        Precisa de suporte? E-mail direto: <strong class="text-slate-200">suporte@mucambo-nexus.com</strong>
+      </div>
+      <a href="/" class="text-emerald-400 hover:underline">
+        ← Voltar ao Início
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    function downloadFakeFile(filename, textContent) {
+      const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
