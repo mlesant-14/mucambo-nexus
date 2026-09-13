@@ -215,20 +215,22 @@ async def get_sucesso(request: Request, order_id: Optional[str] = None):
 
 
 @app.get("/api/download/dossie-pdf")
-async def download_dossie_pdf(order_id: Optional[str] = "89412"):
-    """Gera e entrega o arquivo PDF binário oficial de alta qualidade."""
+async def download_dossie_pdf(order_id: Optional[str] = "89412", empresa: Optional[str] = None):
+    """Gera e entrega o arquivo PDF binário oficial de alta qualidade em 3 páginas completas."""
     from fastapi import Response
     from core.pdf_generator import PDFDeliverableGenerator
     import hashlib
 
-    proof = hashlib.sha256(f"ORDER:{order_id}:MUCAMBO:DELIVERED:2026".encode('utf-8')).hexdigest()
-    pdf_bytes = PDFDeliverableGenerator.generate_dossier_pdf(order_id=order_id, proof_hash=proof)
+    empresa_nome = empresa.strip() if empresa and empresa.strip() else "Operação Logística & Frotas"
+    proof = hashlib.sha256(f"ORDER:{order_id}:{empresa_nome}:MUCAMBO:DELIVERED:2026".encode('utf-8')).hexdigest()
+    pdf_bytes = PDFDeliverableGenerator.generate_dossier_pdf(order_id=order_id, proof_hash=proof, empresa_nome=empresa_nome)
 
+    filename_safe = "".join(c for c in empresa_nome if c.isalnum() or c in (' ', '_', '-')).strip().replace(" ", "_")
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
         headers={
-            "Content-Disposition": "inline; filename=Dossie_Executivo_Otimizacao.pdf"
+            "Content-Disposition": f"inline; filename=Laudo_Tecnico_{filename_safe}.pdf"
         }
     )
 
