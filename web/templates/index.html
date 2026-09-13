@@ -88,13 +88,13 @@
                 <div class="kpi-subtext">Varredura global contínua (24h/dia)</div>
             </div>
 
-            <div class="kpi-card">
+            <div class="kpi-card" style="border-left: 4px solid var(--accent-blue);">
                 <div class="kpi-header">
-                    <span class="kpi-title">{{ t.win_rate }} / Trades</span>
-                    <span class="kpi-icon">📈</span>
+                    <span class="kpi-title">OFERTAS DISPARADAS (24/7)</span>
+                    <span class="kpi-icon">🤖</span>
                 </div>
-                <div class="kpi-value" id="kpiTradesCount">--</div>
-                <div class="kpi-subtext" id="kpiAvgMargin">Margem média: --%</div>
+                <div class="kpi-value" id="kpiAutoOffers" style="color: var(--accent-blue);">--</div>
+                <div class="kpi-subtext">Enviadas sozinho pelo mundo no piloto automático</div>
             </div>
         </section>
 
@@ -148,33 +148,33 @@
                     </div>
                 </section>
             </div>
-        <!-- SECTION: Client Acquisition & Market Distribution Engine -->
+        <!-- SECTION: 100% Autonomous Auto-Offer Engine -->
         <section class="panel distribution-panel">
             <div class="panel-header">
                 <div class="panel-title-wrap">
-                    <h2>🎯 Máquina de Clientes & Canais de Distribuição Real</h2>
-                    <span class="badge-counter" style="background: rgba(0, 245, 155, 0.15); color: var(--accent-green); border-color: var(--accent-green);">ONDE OS COMPRADORES ESTÃO</span>
+                    <h2>🤖 Robô de Ofertas e Prospecção 100% Autônomo (Piloto Automático 24/7)</h2>
+                    <span class="badge-counter" style="background: rgba(0, 180, 216, 0.15); color: var(--accent-blue); border-color: var(--accent-blue);">PILOTO AUTOMÁTICO ATIVO</span>
                 </div>
                 <div class="distribution-actions">
-                    <button class="btn-buy-jit" onclick="triggerStripeValidation()" style="background: linear-gradient(90deg, #635bff, #00d2ff); color: #fff;">
-                        🧪 Testar 1ª Venda Real (Stripe Test)
-                    </button>
+                    <span style="font-size: 0.8rem; color: var(--accent-green); font-weight: 600;">
+                        ⚡ O robô busca e oferece sozinho pelo mundo sem intervenção manual
+                    </span>
                 </div>
             </div>
 
             <div class="distribution-grid">
-                <!-- Channel 1: Secondary Domain Marketplaces -->
+                <!-- Channel 1: Auto Secondary Domain Syndication -->
                 <div class="dist-card">
                     <div class="dist-card-header">
                         <span class="dist-icon">🌐</span>
                         <div>
-                            <h4>Sindicância de Domínios em Massa</h4>
-                            <p class="dist-sub">Publique os domínios encontrados nos maiores leilões mundiais (Afternic, Sedo, Dan).</p>
+                            <h4>Sindicância em Massa nos Leilões Mundiais</h4>
+                            <p class="dist-sub">Exportação sincronizada com as redes da GoDaddy, Afternic e Sedo.</p>
                         </div>
                     </div>
                     <div class="dist-body">
                         <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">
-                            Não espere acharem seu site. Exporte a planilha já precificada e suba direto nas redes da <strong>GoDaddy</strong> e <strong>Sedo</strong> com milhões de buscas diárias.
+                            O robô gera o catálogo com os preços ótimos calculados pelo algoritmo para exposição contínua onde milhões de pessoas buscam domínios todos os dias.
                         </p>
                         <div class="csv-buttons">
                             <a href="/api/syndication/export/afternic" class="btn-export" download>
@@ -187,18 +187,18 @@
                     </div>
                 </div>
 
-                <!-- Channel 2: Autonomous B2B Lead Prospector -->
+                <!-- Channel 2: Live Auto-Offer Feed -->
                 <div class="dist-card">
                     <div class="dist-card-header">
-                        <span class="dist-icon">✉️</span>
+                        <span class="dist-icon">🚀</span>
                         <div>
-                            <h4>Prospecção Ativa B2B por E-mail</h4>
-                            <p class="dist-sub">E-mails personalizados com link direto de pagamento para diretores de empresas.</p>
+                            <h4>Radar de Ofertas Enviadas Automaticamente (Ao Vivo)</h4>
+                            <p class="dist-sub">Empresas e tomadores de decisão recebendo propostas do robô agora mesmo.</p>
                         </div>
                     </div>
                     <div class="dist-body">
                         <div id="outreachContainer" class="outreach-list">
-                            <div class="loading-spinner">Carregando lista de prospecção corporativa...</div>
+                            <div class="loading-spinner">Carregando feed de ofertas autônomas...</div>
                         </div>
                     </div>
                 </div>
@@ -219,6 +219,6 @@
         </div>
     </div>
 
-    <script src="/static/js/app.js?v=3.0"></script>
+    <script src="/static/js/app.js?v=4.0"></script>
 </body>
 </html>

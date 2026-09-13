@@ -282,6 +282,14 @@ async def get_outreach_campaign(request: Request):
     return {"campaign": campaign, "total": len(campaign)}
 
 
+@app.get("/api/offers/recent")
+async def get_recent_offers():
+    return {
+        "dispatched_count": scheduler.dispatcher.offers_dispatched_count,
+        "is_autonomous_active": scheduler.is_running
+    }
+
+
 @app.post("/api/reset-ledger")
 async def reset_ledger():
     db.reset_test_data()

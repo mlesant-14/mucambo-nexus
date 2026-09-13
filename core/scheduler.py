@@ -14,6 +14,7 @@ from hunters.digital_service_hunter import DigitalServiceHunter
 from hunters.prediction_hunter import PredictionHunter
 from execution.arbitrage_engine import ArbitrageEngine
 from execution.fulfillment import FulfillmentEngine
+from core.autonomous_dispatcher import AutonomousOfferDispatcher
 from config import SCAN_INTERVAL_SECONDS, CYCLE_DELAY_SECONDS
 
 
@@ -23,6 +24,7 @@ class AutonomousScheduler:
         self.ws_broadcaster = ws_broadcaster
         self.arbitrage_engine = ArbitrageEngine(db)
         self.fulfillment_engine = FulfillmentEngine(db)
+        self.dispatcher = AutonomousOfferDispatcher(db)
         self.hunters: List[BaseHunter] = [
             DomainHunter(),
             DigitalServiceHunter(),
@@ -81,11 +83,13 @@ class AutonomousScheduler:
                             "summary": self.db.get_financial_summary()
                         })
 
-                # No modo real, o sistema NÃO simula compradores fictícios.
-                # Ele apenas vasculha o mundo, alimenta a vitrine e aguarda compras reais de clientes via Stripe/Webhooks.
-                pass
+                # 2. AUTONOMOUS AUTO-OFFER DISPATCHER (Piloto 100% Automático)
+                # O robô formula e despacha a oferta automaticamente pelo mundo com link de pagamento direto
+                offer_result = await self.dispatcher.run_autonomous_dispatch_cycle()
+                if offer_result:
+                    await self._broadcast("offer_dispatched", offer_result)
 
-                # 2. Sleep until next scan cycle
+                # 3. Sleep until next scan cycle
                 await asyncio.sleep(random.uniform(SCAN_INTERVAL_SECONDS - 1, SCAN_INTERVAL_SECONDS + 2))
 
             except asyncio.CancelledError:

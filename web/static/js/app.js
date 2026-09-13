@@ -68,8 +68,14 @@ async function refreshSummary() {
         document.getElementById('kpiTotalProfit').textContent = data.formatted_profit || '$0.00';
         document.getElementById('kpiActiveCatalog').textContent = data.active_catalog || '0';
         document.getElementById('kpiScanned').textContent = data.total_scanned || '0';
-        document.getElementById('kpiTradesCount').textContent = data.total_trades || '0';
-        document.getElementById('kpiAvgMargin').textContent = `Margem média: ${data.avg_margin_pct?.toFixed(1) || 0}%`;
+
+        // Fetch autonomous offers count
+        try {
+            const offersRes = await fetch('/api/offers/recent');
+            const offersData = await offersRes.json();
+            const autoOffersEl = document.getElementById('kpiAutoOffers');
+            if (autoOffersEl) autoOffersEl.textContent = offersData.dispatched_count || '0';
+        } catch (_) {}
     } catch (e) {
         console.error('Failed to load summary', e);
     }
@@ -422,20 +428,27 @@ async function refreshOutreach() {
         outreachCampaignData = data.campaign || [];
         const container = document.getElementById('outreachContainer');
 
-        if (!outreachCampaignData || outreachCampaignData.length === 0) {
-            container.innerHTML = `<div class="empty-state">Gerando alvos corporativos...</div>`;
-            return;
-        }
-
         container.innerHTML = outreachCampaignData.map((item, idx) => `
             <div class="outreach-row">
                 <div>
-                    <strong>${item.company}</strong> (${item.role})<br>
-                    <span style="color: var(--text-secondary); font-size: 0.72rem;">${item.email}</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 0.65rem; background: rgba(0, 180, 216, 0.2); color: var(--accent-blue); padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                            🚀 DISPARO AUTOMÁTICO 24/7
+                        </span>
+                        <strong>${item.company}</strong> (${item.role})
+                    </div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px;">
+                        E-mail: <code>${item.email}</code> | Oferta: <span style="color: var(--accent-green); font-weight: bold;">${item.price}</span>
+                    </div>
                 </div>
-                <button class="btn-copy-email" onclick="previewEmail(${idx})">
-                    ✉️ Ver Proposta & Link
-                </button>
+                <div style="display: flex; gap: 6px;">
+                    <a href="${item.checkout_link}" target="_blank" class="btn-export" style="font-size: 0.68rem; padding: 4px 8px; border-color: var(--accent-blue);">
+                        🔗 Link da Oferta
+                    </a>
+                    <button class="btn-copy-email" onclick="previewEmail(${idx})">
+                        📄 Ver Proposta
+                    </button>
+                </div>
             </div>
         `).join('');
     } catch (e) {
