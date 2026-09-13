@@ -123,17 +123,24 @@
 
         <!-- Star Buttons -->
         <div class="flex flex-wrap items-center gap-2 pt-1" id="starButtons">
-          <button type="button" onclick="selectStar(5)" class="px-3.5 py-2 rounded-lg bg-slate-900 border border-amber-500/40 hover:bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
+          <button type="button" onclick="selectStar(5)" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-amber-500/40 hover:bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center gap-1 transition cursor-pointer">
             ⭐⭐⭐⭐⭐ Excelente (5/5)
           </button>
-          <button type="button" onclick="selectStar(4)" class="px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
+          <button type="button" onclick="selectStar(4)" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 font-bold text-xs flex items-center gap-1 transition cursor-pointer">
             ⭐⭐⭐⭐ Muito Bom (4/5)
           </button>
-          <button type="button" onclick="selectStar(3)" class="px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-400 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
+          <button type="button" onclick="selectStar(3)" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-400 font-bold text-xs flex items-center gap-1 transition cursor-pointer">
             ⭐⭐⭐ Regular (3/5)
+          </button>
+          <button type="button" onclick="selectStar(2)" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-amber-800/60 hover:bg-amber-800/20 text-amber-400 font-bold text-xs flex items-center gap-1 transition cursor-pointer">
+            ⭐⭐ Precisa Melhorar (2/5)
+          </button>
+          <button type="button" onclick="selectStar(1)" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-rose-800/60 hover:bg-rose-800/20 text-rose-400 font-bold text-xs flex items-center gap-1 transition cursor-pointer">
+            ⭐ Não Gostei / Pedir Revisão (1/5)
           </button>
         </div>
 
+        <!-- Positive Form for 3, 4, 5 stars -->
         <div id="feedbackFormExtra" class="space-y-2.5 pt-2 hidden">
           <label class="block text-[11px] font-semibold text-slate-300">O que mais agregou valor na sua operação?</label>
           <div class="flex flex-wrap gap-2 text-xs">
@@ -155,9 +162,46 @@
           </button>
         </div>
 
+        <!-- Negative Form for 1, 2 stars: Garantia e Reembolso -->
+        <div id="feedbackFormNegative" class="space-y-3 pt-2 hidden border-t border-rose-900/40 mt-2">
+          <div class="p-3 bg-rose-950/40 border border-rose-800/40 rounded-lg space-y-1">
+            <div class="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+              <span>🛡️ GARANTIA INCONDICIONAL DE SATISFAÇÃO (Art. 49 do CDC)</span>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Lamentamos que o estudo não tenha atendido 100% da sua expectativa. Você tem direito à <strong>revisão técnica personalizada gratuita</strong> ou ao <strong>reembolso integral sem burocracia</strong>.
+            </p>
+          </div>
+
+          <label class="block text-[11px] font-semibold text-slate-300">Como prefere que nossa equipe proceda?</label>
+          <div class="space-y-1.5 text-xs">
+            <label class="flex items-center gap-2 p-2 bg-slate-900 border border-slate-800 rounded cursor-pointer hover:border-slate-700">
+              <input type="radio" name="support_choice" value="REVISAO_GRATUITA" checked class="text-blue-500">
+              <span><strong>Revisão Técnica Gratuita:</strong> Recalcular rotas para o modelo exato de caminhão ou rota da minha frota.</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 bg-slate-900 border border-slate-800 rounded cursor-pointer hover:border-slate-700">
+              <input type="radio" name="support_choice" value="REEMBOLSO_TOTAL" class="text-rose-500">
+              <span><strong>Reembolso Integral:</strong> Devolver meu pagamento de R$ 97,00 no mesmo cartão/PIX.</span>
+            </label>
+          </div>
+
+          <div>
+            <textarea id="negativeComment" placeholder="Diga o que faltou no laudo para a sua frota..." rows="2" class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-rose-500"></textarea>
+          </div>
+
+          <button onclick="submitNegativeFeedback()" id="btnSubmitNegative" class="px-5 py-2.5 rounded-lg bg-rose-700 hover:bg-rose-600 text-white font-bold text-xs transition cursor-pointer">
+            Acionar Suporte Prioritário / Garantia
+          </button>
+        </div>
+
         <div id="ratingSuccess" class="hidden p-3.5 bg-emerald-950/60 border border-emerald-500/50 rounded-lg text-xs text-emerald-300 space-y-1">
           <div class="font-bold font-mono">✓ AVALIAÇÃO PROTOCOLADA COM SUCESSO!</div>
           <p class="text-[11px] text-slate-300">Agradecemos a sua resposta. Sua avaliação foi registrada e ajuda a consolidar o índice de satisfação do MUCAMBO.</p>
+        </div>
+
+        <div id="warrantySuccess" class="hidden p-3.5 bg-rose-950/60 border border-rose-500/50 rounded-lg text-xs text-rose-300 space-y-1">
+          <div class="font-bold font-mono">✓ PROTOCOLO DE GARANTIA ABERTO: <span id="warrantyProtocol">GAR-91823</span></div>
+          <p class="text-[11px] text-slate-300">Recebemos sua solicitação. Nossa equipe de engenharia e financeiro entrará em contato via e-mail em até 2 horas úteis para efetuar a revisão gratuita ou o estorno imediato.</p>
         </div>
       </div>
 
@@ -179,7 +223,45 @@
     let currentRating = 5;
     function selectStar(stars) {
       currentRating = stars;
-      document.getElementById('feedbackFormExtra').classList.remove('hidden');
+      if (stars <= 2) {
+        document.getElementById('feedbackFormExtra').classList.add('hidden');
+        document.getElementById('feedbackFormNegative').classList.remove('hidden');
+      } else {
+        document.getElementById('feedbackFormNegative').classList.add('hidden');
+        document.getElementById('feedbackFormExtra').classList.remove('hidden');
+      }
+    }
+
+    async function submitNegativeFeedback() {
+      const btn = document.getElementById('btnSubmitNegative');
+      btn.disabled = true;
+      btn.innerText = 'Processando garantia...';
+
+      const choice = document.querySelector('input[name="support_choice"]:checked')?.value || 'REVISAO_GRATUITA';
+      const comment = document.getElementById('negativeComment').value;
+
+      try {
+        const res = await fetch('/api/report-rating', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            order_id: '{{ order_id }}',
+            company_name: 'Cliente Corporativo',
+            rating: currentRating,
+            liked_aspects: `ACIONOU_GARANTIA: ${choice}`,
+            comment: comment
+          })
+        });
+        const data = await res.json();
+        document.getElementById('starButtons').classList.add('hidden');
+        document.getElementById('feedbackFormNegative').classList.add('hidden');
+        document.getElementById('warrantyProtocol').innerText = data.protocol || 'GAR-91823';
+        document.getElementById('warrantySuccess').classList.remove('hidden');
+      } catch(e) {
+        alert('Erro ao registrar solicitação de garantia.');
+        btn.disabled = false;
+        btn.innerText = 'Acionar Suporte Prioritário / Garantia';
+      }
     }
 
     async function submitReportRating() {
