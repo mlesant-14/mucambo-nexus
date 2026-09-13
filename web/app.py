@@ -341,6 +341,38 @@ async def get_outreach_stats():
     return db.get_outreach_stats()
 
 
+@app.post("/api/report-rating")
+async def post_report_rating(request: Request):
+    """Registra a avaliação do cliente sobre o laudo técnico recebido."""
+    try:
+        data = await request.json()
+    except Exception:
+        data = {}
+
+    order_id = data.get("order_id", "ORD-AVAL")
+    company_name = data.get("company_name", "Cliente Corporativo")
+    rating = int(data.get("rating", 5))
+    liked_aspects = data.get("liked_aspects", "Geral")
+    comment = data.get("comment", "")
+
+    db.save_report_rating(order_id, company_name, rating, liked_aspects, comment)
+    db.log_event("SUCCESS", "CustomerFeedback", f"AVALIAÇÃO RECEBIDA: {company_name} deu nota {rating}/5 estrelas no Laudo ORD-{order_id}!")
+
+    import random
+    protocol = f"AVAL-{random.randint(10000, 99999)}"
+    return {
+        "success": True,
+        "protocol": protocol,
+        "message": f"Agradecemos o seu feedback! Avaliação registrada sob protocolo {protocol}."
+    }
+
+
+@app.get("/api/ratings-summary")
+async def get_ratings_summary():
+    """Retorna o índice de satisfação consolidado e avaliações recentes."""
+    return db.get_ratings_summary()
+
+
 @app.get("/api/summary")
 async def get_summary(lang: str = "pt"):
     summary = db.get_financial_summary()

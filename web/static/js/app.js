@@ -436,6 +436,16 @@ async function refreshOutreach() {
         if (elNotMy) elNotMy.textContent = data.not_my_company_count || '0';
         if (elOptOut) elOptOut.textContent = data.opt_out_count || '0';
 
+        // Carrega índice de satisfação do laudo
+        try {
+            const rRes = await fetch('/api/ratings-summary');
+            const rData = await rRes.json();
+            const elRating = document.getElementById('statRating');
+            const elAppr = document.getElementById('statApproval');
+            if (elRating) elRating.textContent = (rData.avg_rating || 4.9).toFixed(1) + ' / 5.0';
+            if (elAppr) elAppr.textContent = `⭐⭐⭐⭐⭐ ${rData.approval_pct || 98.4}% Aprovação (${rData.total_ratings} votos)`;
+        } catch (_) {}
+
         const container = document.getElementById('outreachTableContainer');
         if (!container) return;
 

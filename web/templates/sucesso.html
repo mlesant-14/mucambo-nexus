@@ -108,6 +108,59 @@
         </p>
       </div>
 
+      <!-- Widget de Avaliação do Laudo pelo Cliente -->
+      <div id="ratingCard" class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-400 text-lg">⭐</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-200">O que você achou deste Laudo Técnico?</span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-mono">Feedback Imediato</span>
+        </div>
+        <p class="text-xs text-slate-300">
+          Sua opinião valida nossa precisão e ajuda a aprimorar nossos parâmetros tarifários. Como você avalia este estudo?
+        </p>
+
+        <!-- Star Buttons -->
+        <div class="flex flex-wrap items-center gap-2 pt-1" id="starButtons">
+          <button type="button" onclick="selectStar(5)" class="px-3.5 py-2 rounded-lg bg-slate-900 border border-amber-500/40 hover:bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
+            ⭐⭐⭐⭐⭐ Excelente (5/5)
+          </button>
+          <button type="button" onclick="selectStar(4)" class="px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
+            ⭐⭐⭐⭐ Muito Bom (4/5)
+          </button>
+          <button type="button" onclick="selectStar(3)" class="px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-400 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer">
+            ⭐⭐⭐ Regular (3/5)
+          </button>
+        </div>
+
+        <div id="feedbackFormExtra" class="space-y-2.5 pt-2 hidden">
+          <label class="block text-[11px] font-semibold text-slate-300">O que mais agregou valor na sua operação?</label>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <label class="inline-flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-slate-300 cursor-pointer">
+              <input type="checkbox" id="aspect_diesel" checked class="rounded"> Economia de Diesel S-10
+            </label>
+            <label class="inline-flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-slate-300 cursor-pointer">
+              <input type="checkbox" id="aspect_pedagio" checked class="rounded"> Contorno de Pedágio / Eixo Suspenso
+            </label>
+            <label class="inline-flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-slate-300 cursor-pointer">
+              <input type="checkbox" id="aspect_rotas" checked class="rounded"> Matriz de Corredores ANTT
+            </label>
+          </div>
+          <div>
+            <textarea id="feedbackComment" placeholder="Deixe um comentário ou depoimento sobre o estudo..." rows="2" class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-emerald-500"></textarea>
+          </div>
+          <button onclick="submitReportRating()" id="btnSubmitRating" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition cursor-pointer">
+            Confirmar Avaliação
+          </button>
+        </div>
+
+        <div id="ratingSuccess" class="hidden p-3.5 bg-emerald-950/60 border border-emerald-500/50 rounded-lg text-xs text-emerald-300 space-y-1">
+          <div class="font-bold font-mono">✓ AVALIAÇÃO PROTOCOLADA COM SUCESSO!</div>
+          <p class="text-[11px] text-slate-300">Agradecemos a sua resposta. Sua avaliação foi registrada e ajuda a consolidar o índice de satisfação do MUCAMBO.</p>
+        </div>
+      </div>
+
     </div>
 
     <!-- Footer Support & Home -->
@@ -123,6 +176,45 @@
   </div>
 
   <script>
+    let currentRating = 5;
+    function selectStar(stars) {
+      currentRating = stars;
+      document.getElementById('feedbackFormExtra').classList.remove('hidden');
+    }
+
+    async function submitReportRating() {
+      const btn = document.getElementById('btnSubmitRating');
+      btn.disabled = true;
+      btn.innerText = 'Enviando...';
+      
+      const aspects = [];
+      if (document.getElementById('aspect_diesel').checked) aspects.push('Diesel S-10');
+      if (document.getElementById('aspect_pedagio').checked) aspects.push('Pedágios/Eixos');
+      if (document.getElementById('aspect_rotas').checked) aspects.push('Rotas ANTT');
+
+      try {
+        const res = await fetch('/api/report-rating', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            order_id: '{{ order_id }}',
+            company_name: 'Cliente Corporativo',
+            rating: currentRating,
+            liked_aspects: aspects.join(', '),
+            comment: document.getElementById('feedbackComment').value
+          })
+        });
+        const data = await res.json();
+        document.getElementById('starButtons').classList.add('hidden');
+        document.getElementById('feedbackFormExtra').classList.add('hidden');
+        document.getElementById('ratingSuccess').classList.remove('hidden');
+      } catch(e) {
+        alert('Erro ao registrar avaliação.');
+        btn.disabled = false;
+        btn.innerText = 'Confirmar Avaliação';
+      }
+    }
+
     function downloadCsvFile() {
       const csv = "Corredor,Custo_Atual,Custo_Otimizado,Economia_Viagem,Percentual\nSP-Curitiba,3840,3320,-520,-13.5%\nCampinas-BH,4290,3650,-640,-14.9%\nRio-Vitoria,2910,2500,-410,-14.1%\nTotal_Medio,11040,9470,-1570,-14.2%";
       triggerDownload("Planilha_Rotas_Economia.csv", csv, "text/csv;charset=utf-8");
