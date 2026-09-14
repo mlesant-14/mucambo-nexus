@@ -134,14 +134,24 @@ class AutonomousOfferDispatcher:
         sent_via_real_smtp = False
         if smtp_user and smtp_pass:
             def _send_sync():
+                import socket
                 msg = MIMEMultipart()
                 msg['From'] = f"MUCAMBO Advisory <{smtp_user}>"
                 msg['To'] = f"{target['contact']} <{target['email']}>"
                 msg['Subject'] = subject
                 msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-                server = smtplib.SMTP(smtp_host, smtp_port, timeout=12)
+                # Força resolução IPv4 para compatibilidade total com nuvem Linux / Render
+                try:
+                    addrinfo = socket.getaddrinfo(smtp_host, smtp_port, socket.AF_INET, socket.SOCK_STREAM)
+                    connect_target = addrinfo[0][4][0]
+                except Exception:
+                    connect_target = smtp_host
+
+                server = smtplib.SMTP(connect_target, smtp_port, timeout=12)
+                server.ehlo(smtp_host)
                 server.starttls()
+                server.ehlo(smtp_host)
                 server.login(smtp_user, smtp_pass)
                 # Entrega o e-mail real formatado para o destinatário e auditoria imediata
                 server.sendmail(smtp_user, [smtp_user], msg.as_string())

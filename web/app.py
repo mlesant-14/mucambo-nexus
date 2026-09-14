@@ -330,11 +330,25 @@ async def trigger_test_dispatch(to_email: Optional[str] = "mllogic25@gmail.com")
         )
         msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-        server = smtplib.SMTP(smtp_host, smtp_port)
-        server.starttls()
-        server.login(smtp_user, smtp_pass)
-        server.sendmail(smtp_user, to_email, msg.as_string())
-        server.quit()
+        import socket
+        import asyncio
+
+        def _send_test_sync():
+            try:
+                addrinfo = socket.getaddrinfo(smtp_host, smtp_port, socket.AF_INET, socket.SOCK_STREAM)
+                connect_target = addrinfo[0][4][0]
+            except Exception:
+                connect_target = smtp_host
+
+            server = smtplib.SMTP(connect_target, smtp_port, timeout=12)
+            server.ehlo(smtp_host)
+            server.starttls()
+            server.ehlo(smtp_host)
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, to_email, msg.as_string())
+            server.quit()
+
+        await asyncio.to_thread(_send_test_sync)
 
         db.log_event("SUCCESS", "AutoOffer", f"Teste de despacho enviado com sucesso para {to_email} via Render Cloud.")
         return {"success": True, "message": f"E-mail enviado com sucesso diretamente do Render para {to_email}!"}
