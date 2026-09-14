@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initWebSocket();
     refreshAllData();
     refreshOutreach();
+    refreshMonetizationMode();
 
     // Periodic backup poll in case WebSocket disconnects
     setInterval(refreshSummary, 4000);
     setInterval(refreshLogs, 3000);
+    setInterval(refreshMonetizationMode, 5000);
 });
 
 // WebSocket Connection for instant updates
@@ -551,6 +553,15 @@ async function triggerStripeValidation() {
                     <p style="font-size: 0.75rem; color: var(--text-secondary);">
                         Assim que o webhook receber a aprovação, o sistema dispara a compra na fonte e entrega instantaneamente o relatório!
                     </p>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+    } catch (e) {
+        console.error('Error triggering validation', e);
+    }
+}
+
 // 1-Click Reset to Zero for Clean Real Production
 async function resetLedgerToZero() {
     const confirmed = confirm("Deseja ZERAR todos os dados e transações de teste para começar do zero em R$ 0,00 reais?");
@@ -565,5 +576,70 @@ async function resetLedgerToZero() {
         }
     } catch (e) {
         console.error('Error resetting ledger', e);
+    }
+}
+
+// Monetization Strategy Controller (Free Degustation vs Real Paid Stripe)
+async function refreshMonetizationMode() {
+    try {
+        const res = await fetch('/api/monetization-mode');
+        const data = await res.json();
+        
+        const badge = document.getElementById('currentModeBadge');
+        const desc = document.getElementById('currentModeDesc');
+        const icon = document.getElementById('modeIconBadge');
+        const btn = document.getElementById('toggleMonetizationBtn');
+        
+        if (!badge || !btn) return;
+        
+        if (data.is_free) {
+            badge.textContent = 'DEGUSTAÇÃO GRATUITA (Feedback & Avaliações)';
+            badge.style.background = 'rgba(0, 230, 118, 0.2)';
+            badge.style.color = '#00e676';
+            badge.style.borderColor = '#00e676';
+            
+            icon.textContent = '🎁';
+            icon.style.background = 'rgba(0, 230, 118, 0.15)';
+            icon.style.borderColor = 'rgba(0, 230, 118, 0.4)';
+            
+            desc.textContent = 'Propostas saem a R$ 0,00 (Cortesia) para colher avaliações 5 estrelas e depoimentos sem risco de estorno.';
+            
+            btn.innerHTML = '<span>💎 Ativar Cobrança Real (R$ 97 Stripe)</span>';
+            btn.style.background = 'linear-gradient(135deg, #0284c7, #2563eb)';
+        } else {
+            badge.textContent = 'COBRANÇA COMERCIAL ATIVA (R$ 97,00 STRIPE)';
+            badge.style.background = 'rgba(99, 102, 241, 0.25)';
+            badge.style.color = '#818cf8';
+            badge.style.borderColor = '#818cf8';
+            
+            icon.textContent = '💎';
+            icon.style.background = 'rgba(99, 102, 241, 0.2)';
+            icon.style.borderColor = 'rgba(99, 102, 241, 0.5)';
+            
+            desc.textContent = 'Propostas e portal de Raio-X cobram R$ 97,00 via Cartão/PIX com liquidação e entrega automática via Stripe.';
+            
+            btn.innerHTML = '<span>🎁 Voltar para Degustação Gratuita</span>';
+            btn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+        }
+    } catch (e) {
+        console.error('Error refreshing monetization mode', e);
+    }
+}
+
+async function toggleMonetizationMode() {
+    const confirmed = confirm("Deseja alternar a estratégia de monetização do sistema?");
+    if (!confirmed) return;
+    
+    try {
+        const res = await fetch('/api/toggle-monetization-mode', { method: 'POST' });
+        const data = await res.json();
+        
+        await refreshMonetizationMode();
+        refreshLogs();
+        
+        alert(`Estratégia atualizada com sucesso!\nNovo modo: ${data.label}`);
+    } catch (e) {
+        console.error('Error toggling monetization mode', e);
+        alert('Erro ao alternar o modo de monetização.');
     }
 }

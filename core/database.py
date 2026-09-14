@@ -123,6 +123,19 @@ class Database:
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+
+            # System Settings Key-Value Store (for monetization_mode toggle, etc.)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS system_settings (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            cursor.execute("""
+                INSERT OR IGNORE INTO system_settings (key, value)
+                VALUES ('monetization_mode', 'FREE_VALIDATION')
+            """)
             conn.commit()
 
     def save_opportunity(self, opp: Opportunity) -> bool:
@@ -348,5 +361,26 @@ class Database:
                 "approval_pct": round((avg_rating / 5.0) * 100, 1) if total > 0 else 98.4,
                 "recent_reviews": recent
             }
+
+    def get_setting(self, key: str, default: str = "") -> str:
+        """Recupera uma configuração global do sistema."""
+        with self._get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT value FROM system_settings WHERE key = ?", (key,))
+            row = cursor.fetchone()
+            if row:
+                return row[0]
+            return default
+
+    def set_setting(self, key: str, value: str) -> None:
+        """Define uma configuração global do sistema."""
+        with self._get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO system_settings (key, value, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+            """, (key, value))
+            conn.commit()
 
 

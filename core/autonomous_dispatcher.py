@@ -60,13 +60,25 @@ class AutonomousOfferDispatcher:
         price_usd = asset["target_price_usd"]
         formatted_price = LocalizationEngine.format_money(price_usd, lang)
 
+        # Verifica a estratégia ativa no banco: FREE_VALIDATION vs PAID_STRIPE
+        monetization_mode = self.db.get_setting("monetization_mode", "FREE_VALIDATION")
+        is_free_mode = (monetization_mode == "FREE_VALIDATION")
+
         # O link do laudo pode ser o portal personalizado de Raio-X ou Stripe direto
         target_encoded = target["company"].replace(" ", "+")
         checkout_link = f"{base_url}/raio-x?empresa={target_encoded}"
 
         # Build personalized automated proposal with compliance footer
         if lang == "pt":
-            subject = f"MUCAMBO Advisory: Estudo Técnico Operacional Gratuito para {target['company']}"
+            if is_free_mode:
+                subject = f"MUCAMBO Advisory: Estudo Técnico Operacional Gratuito para {target['company']}"
+                condition_text = f"Condição: CORTESIA INSTITUCIONAL (Valor regular: {formatted_price} -> R$ 0,00 para homologação e feedback)."
+                action_text = f"Link seguro para emissão e download imediato: {checkout_link}"
+            else:
+                subject = f"MUCAMBO Advisory: Análise Tarifária e Otimização para {target['company']}"
+                condition_text = f"Valor de liquidação do laudo técnico: {formatted_price}"
+                action_text = f"Link seguro para emissão via Stripe e liberação imediata: {checkout_link}"
+
             opt_not_my = f"{base_url}/feedback?action=not_my_company&target={target['company']}&lang=pt"
             opt_out = f"{base_url}/feedback?action=opt_out&target={target['company']}&lang=pt"
             body = (
@@ -74,8 +86,8 @@ class AutonomousOfferDispatcher:
                 f"Nossa divisão de consultoria e inteligência tarifária preparou um estudo de otimização de custos para a sua operação:\n"
                 f"Objeto: {asset['title']}\n"
                 f"Diagnóstico: {asset['description']}\n\n"
-                f"Condição: CORTESIA INSTITUCIONAL (Valor regular: {formatted_price} -> R$ 0,00 para homologação e feedback).\n"
-                f"Link seguro para emissão e download imediato: {checkout_link}\n\n"
+                f"{condition_text}\n"
+                f"{action_text}\n\n"
                 f"O estudo inclui laudo executivo de 4 páginas em PDF, planilha de rotas (Excel/CSV), waypoints GPS e Certificado Criptográfico SHA-256.\n\n"
                 f"MUCAMBO Analytics & Advisory\n\n"
                 f"────────────────────────────────────────\n"
@@ -84,7 +96,15 @@ class AutonomousOfferDispatcher:
                 f"• Não tem interesse / Descadastrar: {opt_out}\n"
             )
         else:
-            subject = f"MUCAMBO Advisory: Complimentary Operational Audit for {target['company']}"
+            if is_free_mode:
+                subject = f"MUCAMBO Advisory: Complimentary Operational Audit for {target['company']}"
+                condition_text = f"Access: COMPLIMENTARY TRIAL (Regular price: {formatted_price} -> Free for evaluation and feedback)."
+                action_text = f"Instant Download Link: {checkout_link}"
+            else:
+                subject = f"MUCAMBO Advisory: Operational Audit Deliverable for {target['company']}"
+                condition_text = f"Settlement Price: {formatted_price}"
+                action_text = f"Direct Secure Order Link (Stripe): {checkout_link}"
+
             opt_not_my = f"{base_url}/feedback?action=not_my_company&target={target['company']}&lang=en"
             opt_out = f"{base_url}/feedback?action=opt_out&target={target['company']}&lang=en"
             body = (
@@ -92,8 +112,8 @@ class AutonomousOfferDispatcher:
                 f"Our corporate advisory team has prepared an operational benchmark study for your sector:\n"
                 f"Deliverable: {asset['title']}\n"
                 f"Scope: {asset['description']}\n\n"
-                f"Access: COMPLIMENTARY TRIAL (Regular price: {formatted_price} -> Free for evaluation and feedback).\n"
-                f"Instant Download Link: {checkout_link}\n\n"
+                f"{condition_text}\n"
+                f"{action_text}\n\n"
                 f"Includes 4-page executive PDF report, routing spreadsheet, driver GPS waypoints, and SHA-256 cryptographic seal.\n\n"
                 f"MUCAMBO Analytics & Advisory\n\n"
                 f"────────────────────────────────────────\n"
@@ -128,10 +148,11 @@ class AutonomousOfferDispatcher:
 
         self.offers_dispatched_count += 1
         dispatch_channel = "SMTP-PROD" if sent_via_real_smtp else "API-DIRECT-BROKER"
+        logged_price = "GRATUITO (Cortesia)" if is_free_mode else formatted_price
 
         self.db.log_event(
             "INFO", "AutoOffer",
-            f"[AUTO-DISPATCH] Oferta enviada automaticamente para {target['contact']} ({target['company']}) | Ativo: '{asset['title']}' (GRATUITO/Cortesia) | Canal: {dispatch_channel}"
+            f"[AUTO-DISPATCH] Oferta enviada para {target['contact']} ({target['company']}) | Ativo: '{asset['title']}' ({logged_price}) | Modo: {monetization_mode} | Canal: {dispatch_channel}"
         )
 
         # Registra formalmente na tabela de monitoramento de outreach
@@ -140,7 +161,7 @@ class AutonomousOfferDispatcher:
             recipient_name=target["contact"],
             company_name=target["company"],
             asset_title=asset["title"],
-            price_formatted="GRATUITO (Cortesia)",
+            price_formatted=logged_price,
             dispatch_channel=dispatch_channel
         )
 

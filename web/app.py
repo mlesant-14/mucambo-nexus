@@ -173,6 +173,9 @@ async def get_raio_x(request: Request, empresa: Optional[str] = None):
     """Página de auditoria e raio-x B2B personalizado para empresas prospectadas."""
     empresa_nome = empresa.strip() if empresa and empresa.strip() else "Sua Empresa"
     
+    monetization_mode = db.get_setting("monetization_mode", "FREE_VALIDATION")
+    is_free_mode = (monetization_mode == "FREE_VALIDATION")
+
     from core.payment_gateway import PaymentGateway
     # Create or link direct Stripe checkout for accessible entry price of R$ 97
     checkout_data = PaymentGateway.create_checkout_session(
@@ -180,16 +183,18 @@ async def get_raio_x(request: Request, empresa: Optional[str] = None):
         asset_title=f"Laudo Técnico de Auditoria Operacional: {empresa_nome}",
         price_usd=17.17,  # R$ 97.00
         currency="BRL",
-        success_url="https://mucambo-nexus.onrender.com/sucesso"
+        success_url=f"https://mucambo-nexus.onrender.com/sucesso?empresa={empresa_nome}"
     )
-    checkout_url = checkout_data.get("checkout_url", "/sucesso")
+    checkout_url = checkout_data.get("checkout_url", f"/sucesso?empresa={empresa_nome}")
 
     return templates.TemplateResponse(
         request=request,
         name="raio_x.html",
         context={
             "empresa_nome": empresa_nome,
-            "checkout_url": checkout_url
+            "checkout_url": checkout_url,
+            "is_free_mode": is_free_mode,
+            "monetization_mode": monetization_mode
         }
     )
 
@@ -335,6 +340,36 @@ async def trigger_test_dispatch(to_email: Optional[str] = "mllogic25@gmail.com")
         return {"success": True, "message": f"E-mail enviado com sucesso diretamente do Render para {to_email}!"}
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+@app.get("/api/monetization-mode")
+async def get_monetization_mode():
+    """Retorna a estratégia comercial ativa: FREE_VALIDATION ou PAID_STRIPE."""
+    mode = db.get_setting("monetization_mode", "FREE_VALIDATION")
+    return {
+        "mode": mode,
+        "is_free": mode == "FREE_VALIDATION",
+        "price_brl": 97.00,
+        "label": "DEGUSTAÇÃO GRATUITA (Validação & Feedback)" if mode == "FREE_VALIDATION" else "COBRANÇA COMERCIAL ATIVA (R$ 97 Stripe)"
+    }
+
+
+@app.post("/api/toggle-monetization-mode")
+async def toggle_monetization_mode():
+    """Alterna entre o modo gratuito de degustação/feedback e o modo comercial real com cobrança Stripe."""
+    current_mode = db.get_setting("monetization_mode", "FREE_VALIDATION")
+    new_mode = "PAID_STRIPE" if current_mode == "FREE_VALIDATION" else "FREE_VALIDATION"
+    db.set_setting("monetization_mode", new_mode)
+
+    label = "COBRANÇA REAL (R$ 97 STRIPE)" if new_mode == "PAID_STRIPE" else "DEGUSTAÇÃO GRATUITA (FEEDBACK/CORTESIA)"
+    db.log_event("INFO", "Settings", f"[ESTRATÉGIA ALTERADA] Modo de monetização comutado para: {label}")
+
+    return {
+        "success": True,
+        "mode": new_mode,
+        "is_free": new_mode == "FREE_VALIDATION",
+        "label": label
+    }
 
 
 @app.get("/api/outreach-stats")
