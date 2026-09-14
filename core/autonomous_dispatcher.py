@@ -30,22 +30,50 @@ class AutonomousOfferDispatcher:
             {"company": "Reiter Log Soluções em Transporte", "contact": "Vanessa Reiter (Diretora de Sustentabilidade)", "email": "sustentabilidade@reiterlog.com", "country": "BR", "lang": "pt"},
             {"company": "Translovato Transportes", "contact": "André Lovato (Gerência de Frotas)", "email": "eficiencia@translovato.com.br", "country": "BR", "lang": "pt"},
             {"company": "Coopercarga Logística Integrada", "contact": "Osni Roman (Coordenação de Rotas)", "email": "tarifas@coopercarga.com.br", "country": "BR", "lang": "pt"},
+            {"company": "TNT Mercúrio Cargas", "contact": "Renato Ribeiro (Gerente Operacional)", "email": "operacoes@tntmercurio.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Expresso São Miguel", "contact": "Elson Fagundes (Diretor de Operações)", "email": "frotas@saomiguel.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Transportes Bertolini", "contact": "Irani Bertolini (Diretoria de Transporte)", "email": "custos@tbl.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Luft Logistics Agronegócio", "contact": "Fernando Luft (Coordenação Logística)", "email": "operacoes@luft.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Della Volpe Transportes", "contact": "Gilmar Della Volpe (Gerente de Custos)", "email": "abastecimento@dellavolpe.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Solistica Brasil Operações", "contact": "Roberta Meireles (Gestão de Frotas)", "email": "planejamento@solistica.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Bauer Cargas Expressas", "contact": "Valdir Bauer (Controladoria de Fretes)", "email": "frotas@bauercargas.com.br", "country": "BR", "lang": "pt"},
+            {"company": "TW Transportes e Logística", "contact": "Tiago Wecker (Superintendência de Rotas)", "email": "eficiencia@twtransportes.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Transportadora Pluma", "contact": "Claudio Rossi (Gerência de Tráfego)", "email": "operacoes@pluma.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Viação Gontijo Cargas", "contact": "Sergio Gontijo (Diretoria de Cargas)", "email": "encomendas@gontijo.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Águia Branca Logística (VIX)", "contact": "Kaumer Chieppe (Diretoria de Frotas)", "email": "operacoes@vix.com.br", "country": "BR", "lang": "pt"},
+            {"company": "JSL - Julio Simões Logística", "contact": "Ramon Alcaraz (Diretor Geral de Operações)", "email": "frotas@jsl.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Ambipar Logística Sustentável", "contact": "Pedro Petersen (Eficiência Energética)", "email": "sustentabilidade@ambipar.com", "country": "BR", "lang": "pt"},
+            {"company": "Transportadora Gabardo", "contact": "Sérgio Gabardo (Diretor Presidente)", "email": "operacoes@gabardo.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Transportes Cavalinho", "contact": "Paulo Cavalinho (Diretoria Executiva)", "email": "gestao.custos@cavalinho.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Ouro Verde Gestão de Frotas", "contact": "Eduardo Gouvêa (Gerente de Contas)", "email": "frotas@ouroverde.net.br", "country": "BR", "lang": "pt"},
+            {"company": "Unidas Frotas Corporativas", "contact": "Marcelo Ribeiro (Consultoria Tarifária)", "email": "corporativo@unidas.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Localiza Fleet Logística", "contact": "Bruno Lasansky (Diretoria de Operações)", "email": "frotas@localiza.com", "country": "BR", "lang": "pt"},
+            {"company": "Martins Atacadista & Logística", "contact": "Juscelino Martins (Diretoria de Distribuição)", "email": "distribuicao@martins.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Dalla Valle Transportes", "contact": "Marcos Dalla Valle (Gerência Operacional)", "email": "frotas@dallavalle.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Rápido Cometa Cargas", "contact": "Luciano Soares (Gestão de Praças)", "email": "operacoes@rapidocometa.com.br", "country": "BR", "lang": "pt"},
+            {"company": "Transpanorama Transportes", "contact": "Claudio Adamuccio (Diretoria de Frotas)", "email": "frotas@transpanorama.com.br", "country": "BR", "lang": "pt"},
         ]
 
     async def run_autonomous_dispatch_cycle(self, base_url: str = "https://mucambo-nexus.onrender.com") -> Optional[Dict[str, Any]]:
         """
-        100% Autonomous cycle:
-        1. Picks an active high-margin asset from the catalog.
-        2. Selects a targeted global buyer.
-        3. Formulates a personalized offer with a direct Stripe checkout link.
-        4. Auto-dispatches the offer via API/Email without human intervention.
+        100% Autonomous cycle com DEDUPLICAÇÃO ESTRITA:
+        1. Filtra e descarta empresas que JÁ receberam proposta anteriormente.
+        2. Seleciona exclusivamente um prospect inédito.
+        3. Formata e despacha o laudo sem repetição.
         """
-        # Filtro estrito: O robô autônomo apenas prospecta serviços digitais e laudos técnicos
-        # que possuem entrega 100% automatizada e garantida via ReportLab e dados auditados.
-        active_items = self.db.get_active_catalog(limit=50)
-        digital_services = [a for a in active_items if a.get("asset_type") == "DIGITAL_SERVICE"]
-        
-        target = random.choice(self.GLOBAL_TARGET_COMPANIES)
+        # REGRA RIGOROSA: NUNCA enviar para onde já enviou (Deduplicação & LGPD)
+        contacted_names = set(self.db.get_contacted_companies())
+        available_targets = [
+            t for t in self.GLOBAL_TARGET_COMPANIES
+            if t["company"].strip().lower() not in contacted_names 
+            and not self.db.is_company_contacted(t["company"], t.get("email", ""))
+        ]
+
+        if not available_targets:
+            self.db.log_event("INFO", "AutoOffer", "[DEDUPLICAÇÃO ATIVA] Todas as 30 empresas da carteira já foram contatadas. Disparos repetidos bloqueados.")
+            return None
+
+        target = random.choice(available_targets)
         lang = target["lang"]
 
         if digital_services:
