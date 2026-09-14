@@ -505,6 +505,35 @@ async function refreshOutreach() {
     }
 }
 
+async function triggerRealDispatch() {
+    const btn = document.getElementById('realDispatchBtn');
+    const oldHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.innerHTML = '<span>⏳ Enviando via Gmail...</span>';
+        btn.disabled = true;
+    }
+
+    try {
+        const res = await fetch('/api/trigger-real-dispatch', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+            await refreshOutreach();
+            refreshLogs();
+            alert(`✅ ${data.message}\n\nO e-mail foi autenticado no Google e entregue em tempo real no seu Gmail oficial!`);
+        } else {
+            alert('Falha ao disparar e-mail: ' + (data.error || 'Erro desconhecido'));
+        }
+    } catch (e) {
+        console.error('Error triggering real dispatch', e);
+        alert('Erro ao disparar e-mail real.');
+    } finally {
+        if (btn) {
+            btn.innerHTML = oldHtml || '<span>🚀 Disparar E-mail Real Agora (Gmail)</span>';
+            btn.disabled = false;
+        }
+    }
+}
+
 function previewEmail(idx) {
     const item = outreachCampaignData[idx];
     if (!item) return;

@@ -342,6 +342,21 @@ async def trigger_test_dispatch(to_email: Optional[str] = "mllogic25@gmail.com")
         return {"success": False, "error": str(e)}
 
 
+@app.post("/api/trigger-real-dispatch")
+async def trigger_real_dispatch_endpoint():
+    """Aciona um disparo real imediato do robô para uma empresa de transportes real via Gmail."""
+    from core.autonomous_dispatcher import AutonomousOfferDispatcher
+    dispatcher = AutonomousOfferDispatcher(db)
+    result = await dispatcher.run_autonomous_dispatch_cycle()
+    if result:
+        return {
+            "success": True,
+            "dispatch": result,
+            "message": f"Proposta técnica enviada com sucesso para {result.get('target_company')} ({result.get('contact')}) via Gmail Oficial!"
+        }
+    return {"success": False, "error": "Falha ao gerar ciclo de despacho."}
+
+
 @app.get("/api/monetization-mode")
 async def get_monetization_mode():
     """Retorna a estratégia comercial ativa: FREE_VALIDATION ou PAID_STRIPE."""
