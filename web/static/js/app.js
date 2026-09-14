@@ -67,9 +67,12 @@ async function refreshSummary() {
         const res = await fetch(`/api/summary?lang=${currentLang}`);
         const data = await res.json();
 
-        document.getElementById('kpiTotalProfit').textContent = data.formatted_profit || '$0.00';
-        document.getElementById('kpiActiveCatalog').textContent = data.active_catalog || '0';
-        document.getElementById('kpiScanned').textContent = data.total_scanned || '0';
+        const elProfit = document.getElementById('kpiTotalProfit');
+        const elCatalog = document.getElementById('kpiActiveCatalog');
+        const elScanned = document.getElementById('kpiScanned');
+        if (elProfit) elProfit.textContent = data.formatted_profit || '$0.00';
+        if (elCatalog) elCatalog.textContent = data.active_catalog || '0';
+        if (elScanned) elScanned.textContent = data.total_scanned || '0';
 
         // Fetch autonomous offers count
         try {
@@ -95,14 +98,17 @@ async function refreshCatalog() {
 
 function renderCatalog(items) {
     const container = document.getElementById('catalogContainer');
+    if (!container) return;
+
     const filtered = currentFilter === 'ALL' 
         ? items 
         : items.filter(i => i.asset_type === currentFilter);
 
-    document.getElementById('catalogCount').textContent = filtered.length;
+    const countEl = document.getElementById('catalogCount');
+    if (countEl) countEl.textContent = filtered.length;
 
     if (!filtered || filtered.length === 0) {
-        container.innerHTML = `<div class="empty-state">Nenhum ativo intangível nesta categoria no momento. O scanner está buscando novas oportunidades...</div>`;
+        container.innerHTML = `<div class="empty-state">Nenhum laudo nesta categoria no momento.</div>`;
         return;
     }
 
@@ -169,6 +175,7 @@ async function refreshTrades() {
         const res = await fetch(`/api/trades?lang=${currentLang}`);
         const data = await res.json();
         const container = document.getElementById('tradesContainer');
+        if (!container) return;
 
         if (!data.trades || data.trades.length === 0) {
             container.innerHTML = `<div class="empty-state">Aguardando primeiras liquidações autônomas...</div>`;
