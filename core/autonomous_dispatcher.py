@@ -61,16 +61,19 @@ class AutonomousOfferDispatcher:
         2. Seleciona exclusivamente um prospect inédito.
         3. Formata e despacha o laudo sem repetição.
         """
-        # REGRA RIGOROSA: NUNCA enviar para onde já enviou (Deduplicação & LGPD)
+        # REGRA RIGOROSA: NUNCA enviar para o mesmo e-mail nem para a mesma empresa (Deduplicação & LGPD)
         contacted_names = set(self.db.get_contacted_companies())
+        contacted_emails = set(self.db.get_contacted_emails())
+
         available_targets = [
             t for t in self.GLOBAL_TARGET_COMPANIES
             if t["company"].strip().lower() not in contacted_names 
+            and t.get("email", "").strip().lower() not in contacted_emails
             and not self.db.is_company_contacted(t["company"], t.get("email", ""))
         ]
 
         if not available_targets:
-            self.db.log_event("INFO", "AutoOffer", "[DEDUPLICAÇÃO ATIVA] Todas as 30 empresas da carteira já foram contatadas. Disparos repetidos bloqueados.")
+            self.db.log_event("INFO", "AutoOffer", "[DEDUPLICAÇÃO ATIVA] Todos os e-mails e empresas da carteira já foram contatados. Disparos repetidos bloqueados.")
             return None
 
         target = random.choice(available_targets)

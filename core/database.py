@@ -303,22 +303,32 @@ class Database:
             """, (status, protocol_id, f"%{company_or_target}%", f"%{company_or_target}%"))
             conn.commit()
 
+    def get_contacted_emails(self) -> List[str]:
+        """Retorna a lista de todos os e-mails que já receberam qualquer comunicação."""
+        with self._get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT LOWER(TRIM(recipient_email)) FROM email_outreach_logs WHERE recipient_email != ''")
+            return [row[0] for row in cursor.fetchall() if row[0]]
+
     def get_contacted_companies(self) -> List[str]:
         """Retorna a lista de nomes de empresas já contatadas para evitar qualquer disparo duplicado."""
         with self._get_conn() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT DISTINCT LOWER(company_name) FROM email_outreach_logs")
-            return [row[0] for row in cursor.fetchall()]
+            cursor.execute("SELECT DISTINCT LOWER(TRIM(company_name)) FROM email_outreach_logs WHERE company_name != ''")
+            return [row[0] for row in cursor.fetchall() if row[0]]
 
     def is_company_contacted(self, company_name: str, email: str = "") -> bool:
         """Verifica se a empresa ou e-mail já foi abordado anteriormente em qualquer momento."""
+        c_clean = company_name.strip().lower()
+        e_clean = email.strip().lower()
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT 1 FROM email_outreach_logs 
-                WHERE LOWER(company_name) = LOWER(?) OR (LOWER(recipient_email) = LOWER(?) AND ? != '')
+                WHERE (LOWER(TRIM(company_name)) = ? AND ? != '')
+                   OR (LOWER(TRIM(recipient_email)) = ? AND ? != '')
                 LIMIT 1
-            """, (company_name.strip(), email.strip(), email.strip()))
+            """, (c_clean, c_clean, e_clean, e_clean))
             return cursor.fetchone() is not None
 
     def get_outreach_stats(self) -> Dict[str, Any]:
