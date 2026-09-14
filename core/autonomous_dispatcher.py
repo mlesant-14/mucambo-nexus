@@ -122,26 +122,32 @@ class AutonomousOfferDispatcher:
                 f"• Not interested / Unsubscribe: {opt_out}\n"
             )
 
-        # Send proposal automatically
+        # Send proposal automatically in non-blocking background thread
         smtp_user = os.getenv("SMTP_USER")
         smtp_pass = os.getenv("SMTP_PASS")
         smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
         smtp_port = int(os.getenv("SMTP_PORT", "587"))
 
         sent_via_real_smtp = False
-        if smtp_user and smtp_pass:
-            try:
+        # Somente tenta conexão SMTP real se não for domínio demonstrativo fictício
+        is_demo_email = any(d in target["email"].lower() for d in ["-demo.", "example.com", "teste.com", ".local"])
+
+        if smtp_user and smtp_pass and not is_demo_email:
+            def _send_sync():
                 msg = MIMEMultipart()
-                msg['From'] = smtp_user
+                msg['From'] = f"MUCAMBO Advisory <{smtp_user}>"
                 msg['To'] = target["email"]
                 msg['Subject'] = subject
                 msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-                server = smtplib.SMTP(smtp_host, smtp_port)
+                server = smtplib.SMTP(smtp_host, smtp_port, timeout=10)
                 server.starttls()
                 server.login(smtp_user, smtp_pass)
                 server.sendmail(smtp_user, target["email"], msg.as_string())
                 server.quit()
+
+            try:
+                await asyncio.to_thread(_send_sync)
                 sent_via_real_smtp = True
             except Exception as e:
                 self.db.log_event("WARNING", "AutoOffer", f"SMTP error: {str(e)}. Fallback to API dispatch.")

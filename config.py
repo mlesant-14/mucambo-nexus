@@ -30,8 +30,8 @@ CURRENCY_RATES = {
 }
 
 # Scan Intervals (in seconds)
-SCAN_INTERVAL_SECONDS = 6
-CYCLE_DELAY_SECONDS = 4
+SCAN_INTERVAL_SECONDS = 30
+CYCLE_DELAY_SECONDS = 15
 
 # Supported Asset Categories (All Intangible)
 ASSET_TYPES = {
